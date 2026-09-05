@@ -1,12 +1,12 @@
 extends Node
 ## MariaDB 客户端（Autoload 单例，GDScript 版）。
-## 通过内网 PHP REST 接口（players_api.php）访问 MariaDB；Godot 标准版无法直连 MySQL 协议，
+## 通过内网 PHP REST 网关（db_api.php）访问 MariaDB；Godot 标准版无法直连 MySQL 协议，
 ## 故由部署在 MariaDB 同站点（phpMyAdmin 所在 web 根目录）的 PHP 脚本充当 HTTP→SQL 网关。
+## 网关为多表通用接口：统一 POST {table, op, where, data, limit}，支持 select/insert/update/upsert/delete。
 ## 配置读取优先级：环境变量 MARIADB_API_BASE > res://Config/mariadb.json 的 "apiBase"。
 ##
-## 返回结构与 SupabaseClient.request 保持一致：
-## { "status": int, "ok": bool, "data": Variant, "raw": String }
-## 其中 data 对读操作是行数组（Array），与 PostgREST 一致，便于上层无差别处理。
+## 返回结构统一为 { "status": int, "ok": bool, "data": Variant, "raw": String }，
+## 其中 data 对读操作是行数组（Array），便于上层无差别处理。
 
 const CONFIG_PATH := "res://Config/mariadb.json"
 const HTTP_TIMEOUT := 8.0
@@ -44,31 +44,38 @@ func _initialize() -> void:
 	initialized.emit()
 
 
-## 按用户名查询，返回行数组（未找到为 []）。
-func get_by_username(username: String) -> Dictionary:
-	return await _call("get_by_username", {"username": username})
+## 通用查询：按等值条件 [param where] 过滤，[param limit] > 0 时限制行数。
+## 返回 data = 行数组（未找到为 []）。
+func select(table: String, where: Dictionary = {}, limit: int = -1) -> Dictionary:
+	var body := {"table": table, "op": "select", "where": where}
+	if limit > 0:
+		body["limit"] = limit
+	return await _call(body)
 
 
-## 按主键 id 查询，返回行数组（未找到为 []）。
-func get_by_id(id: int) -> Dictionary:
-	return await _call("get_by_id", {"id": id})
+## 插入一行。[param data] 为列值字典（仅网关白名单列生效）。
+## 成功返回 data = [新行]、status 201；唯一键冲突返回 status 409。
+func insert(table: String, data: Dictionary) -> Dictionary:
+	return await _call({"table": table, "op": "insert", "data": data})
 
 
-## 创建玩家。[param row] 可含 "id"（与 Supabase 对齐时传入，接口按 upsert 处理）。
-## 成功返回 data = [新行]；用户名冲突返回 status 409。
-func create(row: Dictionary) -> Dictionary:
-	return await _call("create", row, true)
+## 按 [param where]（须命中主键）更新 [param data] 中的列。
+func update(table: String, where: Dictionary, data: Dictionary) -> Dictionary:
+	return await _call({"table": table, "op": "update", "where": where, "data": data})
 
 
-## 按 id 更新 [param patch] 中的字段。
-func update(id: int, patch: Dictionary) -> Dictionary:
-	var body := patch.duplicate()
-	body["id"] = id
-	return await _call("update", body, true)
+## 存在则更新、不存在则插入（依赖主键/唯一键）。[param data] 需含主键列。
+func upsert(table: String, data: Dictionary) -> Dictionary:
+	return await _call({"table": table, "op": "upsert", "data": data})
 
 
-## 统一的接口调用：读用 GET，写用 POST（body 为 JSON）。
-func _call(action: String, params: Dictionary, use_post: bool = false) -> Dictionary:
+## 按 [param where] 删除行。
+func delete(table: String, where: Dictionary) -> Dictionary:
+	return await _call({"table": table, "op": "delete", "where": where})
+
+
+## 统一网关调用：所有操作走单一 POST（body 为 JSON）。
+func _call(body: Dictionary) -> Dictionary:
 	if not is_ready:
 		return {"status": 0, "ok": false, "data": null, "raw": failure_reason}
 
@@ -76,19 +83,9 @@ func _call(action: String, params: Dictionary, use_post: bool = false) -> Dictio
 	http.timeout = HTTP_TIMEOUT
 	add_child(http)
 
-	var url := "%s/players_api.php?action=%s" % [api_base, action.uri_encode()]
-	var err: int
-	if use_post:
-		err = http.request(url, PackedStringArray(["Content-Type: application/json"]),
-			HTTPClient.METHOD_POST, JSON.stringify(params))
-	else:
-		var query := PackedStringArray()
-		for key in params:
-			query.append("%s=%s" % [key, str(params[key]).uri_encode()])
-		if not query.is_empty():
-			url += "&" + "&".join(query)
-		err = http.request(url, PackedStringArray(), HTTPClient.METHOD_GET)
-
+	var url := "%s/db_api.php" % api_base
+	var err := http.request(url, PackedStringArray(["Content-Type: application/json"]),
+		HTTPClient.METHOD_POST, JSON.stringify(body))
 	if err != OK:
 		http.queue_free()
 		return {"status": 0, "ok": false, "data": null, "raw": "HTTP 请求发送失败：%s" % error_string(err)}
@@ -98,13 +95,24 @@ func _call(action: String, params: Dictionary, use_post: bool = false) -> Dictio
 
 	var status: int = result[1]
 	var raw := (result[3] as PackedByteArray).get_string_from_utf8()
-	var data: Variant = null
+	# 空响应体时给出可读原因（连不上/超时等），避免上层只看到空字符串无法排查
+	if status == 0 and raw.is_empty():
+		match int(result[0]):
+			HTTPRequest.RESULT_CANT_CONNECT:
+				raw = "无法连接 MariaDB 接口 %s（服务未启动/端口不对/被防火墙拦截）" % url
+			HTTPRequest.RESULT_TIMEOUT:
+				raw = "连接 MariaDB 接口超时：%s" % url
+			HTTPRequest.RESULT_CANT_RESOLVE:
+				raw = "无法解析 MariaDB 接口地址：%s" % url
+			_:
+				raw = "请求 MariaDB 接口失败（result=%d）：%s" % [int(result[0]), url]
+	var parsed: Variant = null
 	if not raw.is_empty():
 		var json := JSON.new()
 		if json.parse(raw) == OK:
-			data = json.data
-	# PHP 接口返回 {"ok":bool,"rows":Array,...}，这里把 rows 提升为 data，向 PostgREST 形态看齐
+			parsed = json.data
+	# 网关返回 {"ok":bool,"rows":Array,...}，这里把 rows 提升为 data
 	var rows: Variant = null
-	if data is Dictionary:
-		rows = (data as Dictionary).get("rows", null)
+	if parsed is Dictionary:
+		rows = (parsed as Dictionary).get("rows", null)
 	return {"status": status, "ok": status >= 200 and status < 300, "data": rows, "raw": raw}

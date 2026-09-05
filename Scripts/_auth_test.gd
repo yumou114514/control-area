@@ -13,8 +13,8 @@ func _ready() -> void:
 	PlayerAuth.login_failed.connect(func(m): _fail("login", m))
 
 	print("[AuthTest] user=%s" % _test_user)
-	if not SupabaseClient.is_ready:
-		_fail("init", SupabaseClient.failure_reason)
+	if not MariaDBClient.is_ready:
+		_fail("init", MariaDBClient.failure_reason)
 		return
 	PlayerAuth.register(_test_user, _test_pass)
 
@@ -31,7 +31,7 @@ func _on_login_ok(player: Dictionary) -> void:
 
 
 func _cleanup(id: int) -> void:
-	var res := await SupabaseClient.request("players?id=eq.%d" % id, HTTPClient.METHOD_DELETE)
+	var res := await DatabaseClient.delete_player(id)
 	print("[AuthTest] cleanup DELETE status=%d" % res.status)
 	_done("PASS")
 

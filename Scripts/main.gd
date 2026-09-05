@@ -20,9 +20,9 @@ func _ready() -> void:
 	PlayerAuth.register_failed.connect(_on_auth_failed)
 
 	# 数据库 未就绪时禁止操作
-	if not SupabaseClient.is_ready:
+	if not MariaDBClient.is_ready:
 		_set_busy(true)
-		var reason := SupabaseClient.failure_reason
+		var reason := MariaDBClient.failure_reason
 		_show_error(reason if not reason.is_empty() else "正在连接数据库…")
 
 

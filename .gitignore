@@ -2,8 +2,5 @@
 .godot/
 /android/
 
-# Supabase 本地密钥配置（不提交）
-Config/supabase.json
-
 # MariaDB 内网连接配置（不提交，参考 mariadb.json.example）
 Config/mariadb.json

@@ -17,7 +17,6 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-SupabaseClient="*res://Scripts/supabase_client.gd"
 MariaDBClient="*res://Scripts/mariadb_client.gd"
 DatabaseClient="*res://Scripts/database_client.gd"
 PlayerAuth="*res://Scripts/player_auth.gd"

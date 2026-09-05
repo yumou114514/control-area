@@ -1,5 +1,5 @@
 extends SceneTree
-## 临时冒烟测试：验证 Supabase players 表连通性（跑完即删）
+## 临时冒烟测试：验证 MariaDB 网关（db_api.php）players 表连通性（跑完即删）
 
 
 var _started := false
@@ -14,25 +14,27 @@ func _process(_delta: float) -> bool:
 
 
 func _start() -> void:
-	var file := FileAccess.open("res://Config/supabase.json", FileAccess.READ)
-	if file == null:
-		_finish("no_config", "缺少 Config/supabase.json")
+	var api_base := OS.get_environment("MARIADB_API_BASE")
+	if api_base.is_empty() and FileAccess.file_exists("res://Config/mariadb.json"):
+		var file := FileAccess.open("res://Config/mariadb.json", FileAccess.READ)
+		if file != null:
+			var json := JSON.new()
+			if json.parse(file.get_as_text()) == OK and json.data is Dictionary:
+				api_base = str((json.data as Dictionary).get("apiBase", ""))
+	api_base = api_base.strip_edges().rstrip("/")
+	if api_base.is_empty():
+		_finish("no_config", "缺少 MARIADB_API_BASE / Config/mariadb.json")
 		return
-	var json := JSON.new()
-	if json.parse(file.get_as_text()) != OK:
-		_finish("bad_config", "配置文件解析失败")
-		return
-	var cfg: Dictionary = json.data
-	var url: String = str(cfg.get("url", "")).path_join("rest/v1")
-	var key: String = str(cfg.get("anonKey", ""))
 
 	var http := HTTPRequest.new()
 	root.add_child(http)
 	http.request_completed.connect(_on_done.bind(http))
+	var body := JSON.stringify({"table": "players", "op": "select", "limit": 1})
 	var err := http.request(
-		url.path_join("players?select=id,username&limit=1"),
-		PackedStringArray(["apikey: %s" % key, "Authorization: Bearer %s" % key]),
-		HTTPClient.METHOD_GET,
+		"%s/db_api.php" % api_base,
+		PackedStringArray(["Content-Type: application/json"]),
+		HTTPClient.METHOD_POST,
+		body,
 	)
 	if err != OK:
 		_finish("request_error", error_string(err))
