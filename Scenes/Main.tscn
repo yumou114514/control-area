@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://d10lw2hdh5ajo"]
+
+[ext_resource type="Script" uid="uid://dgaco5l8hpjfp" path="res://Scripts/main.gd" id="1_main"]
+
+[node name="Main" type="Control" unique_id=291240266]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1349678556]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.078431375, 0.105882354, 0.1764706, 1)
+
+[node name="Center" type="CenterContainer" parent="." unique_id=928487399]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Center" unique_id=2049494806]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center/Panel" unique_id=139508539]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Center/Panel/VBox" unique_id=2083593480]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "Yumou Auth登录"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Center/Panel/VBox" unique_id=729952663]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="UsernameEdit" type="LineEdit" parent="Center/Panel/VBox" unique_id=1261149917]
+layout_mode = 2
+placeholder_text = "用户名"
+max_length = 32
+
+[node name="PasswordEdit" type="LineEdit" parent="Center/Panel/VBox" unique_id=217889201]
+layout_mode = 2
+placeholder_text = "密码（至少 6 位）"
+max_length = 64
+secret = true
+
+[node name="Buttons" type="HBoxContainer" parent="Center/Panel/VBox" unique_id=854382026]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LoginButton" type="Button" parent="Center/Panel/VBox/Buttons" unique_id=712368773]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "登录"
+
+[node name="RegisterButton" type="Button" parent="Center/Panel/VBox/Buttons" unique_id=1645281077]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "注册"
+
+[node name="StatusLabel" type="Label" parent="Center/Panel/VBox" unique_id=1812535844]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.86, 0.98, 1)
+text = " "
+horizontal_alignment = 1
+autowrap_mode = 2

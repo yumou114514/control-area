@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://clp8fo65d7vpg"]
+
+[ext_resource type="Script" uid="uid://1grojligjgxd" path="res://Scripts/interact_hint.gd" id="1_hint"]
+
+[node name="InteractHint" type="PanelContainer" unique_id=1545525470]
+mouse_filter = 2
+script = ExtResource("1_hint")
+
+[node name="Label" type="Label" parent="." unique_id=1135909647]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "按 F 交互"

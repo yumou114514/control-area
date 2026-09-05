@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://cblk302uehi68"]
+
+[ext_resource type="Script" uid="uid://bmwwabejj8rct" path="res://Scripts/splash.gd" id="1_splash"]
+[ext_resource type="Texture2D" uid="uid://cbwoq8q0yvej8" path="res://pictures/studiologo.png" id="2_studio"]
+[ext_resource type="Texture2D" uid="uid://wjosnkheju6t" path="res://pictures/gamelogo.png" id="3_game"]
+
+[node name="Splash" type="Control" unique_id=2057018082]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_splash")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1361186079]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="StudioLogo" type="TextureRect" parent="." unique_id=25577736]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -64.0
+offset_right = 240.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_studio")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="GameLogo" type="TextureRect" parent="." unique_id=19917393]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -120.0
+offset_right = 120.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_game")
+expand_mode = 1
+stretch_mode = 6

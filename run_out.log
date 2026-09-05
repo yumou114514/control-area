@@ -1,0 +1,36 @@
+WorkerThreadPool: 6 threads, 1 max low-priority.
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+TextServer: Added interface "Dummy"
+TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+Using "default" pen tablet driver...
+
+TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+CORE API HASH: 2004498165
+EDITOR API HASH: 1696660745
+SceneTreeFTI: traversal method DEFAULT
+Loading resource: res://Scripts/supabase_client.gd remapped: res://Scripts/supabase_client.gd
+Completed load for: 'res://Scripts/supabase_client.gd' remapped 'res://Scripts/supabase_client.gd' at thread -1
+Loading resource: res://Scripts/player_auth.gd remapped: res://Scripts/player_auth.gd
+Completed load for: 'res://Scripts/player_auth.gd' remapped 'res://Scripts/player_auth.gd' at thread -1
+Loading resource: res://Scripts/game_version.gd remapped: res://Scripts/game_version.gd
+Completed load for: 'res://Scripts/game_version.gd' remapped 'res://Scripts/game_version.gd' at thread -1
+Loaded builtin CA certificates
+Loading resource: res://Scenes/Loading.tscn remapped: res://Scenes/Loading.tscn
+Loading resource: res://Scripts/loading.gd remapped: res://Scripts/loading.gd
+Completed load for: 'res://Scripts/loading.gd' remapped 'res://Scripts/loading.gd' at thread -1
+Completed load for: 'res://Scenes/Loading.tscn' remapped 'res://Scenes/Loading.tscn' at thread -1
+[Supabase] 客户端初始化完成：https://vhmaxhtxpnbfkedhaind.supabase.co
+thirdparty/mbedtls/library/ssl_tls13_generic.c:1591: 000001F141A2C360: Perform PSA-based ECDH/FFDH computation.
+thirdparty/mbedtls/library/ssl_tls13_client.c:1954: 000001F141A2C360: Switch to handshake keys for inbound traffic
+thirdparty/mbedtls/library/ssl_tls13_generic.c:0442: 000001F141A2C360: mbedtls_ssl_tls13_process_certificate_verify() returned 0 (-0x0000)
+thirdparty/mbedtls/library/ssl_tls13_client.c:2659: 000001F141A2C360: Switch to handshake traffic keys for outbound traffic
+thirdparty/mbedtls/library/ssl_tls13_generic.c:1274: 000001F141A2C360: Switch to application keys for inbound traffic
+thirdparty/mbedtls/library/ssl_tls13_generic.c:1277: 000001F141A2C360: Switch to application keys for outbound traffic
+Loading resource: res://Scenes/Game.tscn remapped: res://Scenes/Game.tscn
+Loading resource: res://Scripts/game.gd remapped: res://Scripts/game.gd
+Completed load for: 'res://Scripts/game.gd' remapped 'res://Scripts/game.gd' at thread -1
+Completed load for: 'res://Scenes/Game.tscn' remapped 'res://Scenes/Game.tscn' at thread -1
+Loading resource: res://Scenes/Main.tscn remapped: res://Scenes/Main.tscn
+Loading resource: res://Scripts/main.gd remapped: res://Scripts/main.gd
+Completed load for: 'res://Scripts/main.gd' remapped 'res://Scripts/main.gd' at thread -1
+Completed load for: 'res://Scenes/Main.tscn' remapped 'res://Scenes/Main.tscn' at thread -1

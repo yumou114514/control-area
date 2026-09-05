@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://p2ppj5k6tyvl"]
+
+[ext_resource type="Script" uid="uid://chxucnhxrvabi" path="res://Scripts/dialog_box.gd" id="1_db"]
+
+[node name="DialogBox" type="Control" unique_id=1978754076]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_db")
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=1911593657]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = -150.0
+offset_right = -80.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Box" type="VBoxContainer" parent="Panel" unique_id=1841072830]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Text" type="Label" parent="Panel/Box" unique_id=666039547]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Panel/Box" unique_id=652362438]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.62, 0.72, 1)
+theme_override_font_sizes/font_size = 13
+text = "点击 / 按空格继续..."
+horizontal_alignment = 2

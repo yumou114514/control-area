@@ -1,0 +1,27 @@
+WorkerThreadPool: 6 threads, 1 max low-priority.
+Godot Engine v4.7.1.stable.mono.official.a13da4feb - https://godotengine.org
+TextServer: Added interface "Dummy"
+TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+Using "default" pen tablet driver...
+
+TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+.NET: Initializing module...
+Found hostfxr: C:/Program Files/dotnet/host/fxr/10.0.9/hostfxr.dll
+.NET: hostfxr initialized
+.NET: GodotPlugins initialized
+CORE API HASH: 2244263461
+EDITOR API HASH: 3539082181
+SceneTreeFTI: traversal method DEFAULT
+Loading resource: res://Scripts/SupabaseClient.cs remapped: res://Scripts/SupabaseClient.cs
+Completed load for: 'res://Scripts/SupabaseClient.cs' remapped 'res://Scripts/SupabaseClient.cs' at thread -1
+MbedTLS: Some X509 certificates could not be parsed (1 certificates skipped).
+Loaded system CA certificates
+Loading resource: res://Scenes/Main.tscn remapped: res://Scenes/Main.tscn
+Loading resource: res://Scripts/Main.cs remapped: res://Scripts/Main.cs
+Completed load for: 'res://Scripts/Main.cs' remapped 'res://Scripts/Main.cs' at thread -1
+Completed load for: 'res://Scenes/Main.tscn' remapped 'res://Scenes/Main.tscn' at thread -1
+Unloading: Disposing tracked instances...
+Unloading: Finished disposing tracked instances.
+XR: Clearing primary interface
+XR: Removed interface "Native mobile"
+XR: Removed interface "OpenXR"

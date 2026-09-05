@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dfjf0ldgfew3o"]
+
+[ext_resource type="Script" uid="uid://wgrw1ggae7gx" path="res://Scripts/_hash_test.gd" id="1_test"]
+
+[node name="HashTest" type="Node" unique_id=1647215091]
+script = ExtResource("1_test")

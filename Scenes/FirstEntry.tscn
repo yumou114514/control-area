@@ -1,0 +1,157 @@
+[gd_scene format=3 uid="uid://bysw8wk34ng3y"]
+
+[ext_resource type="Script" uid="uid://d0y8m45waxp5g" path="res://Scripts/first_entry.gd" id="1_first"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/DialogBox.tscn" id="2_dialogbox"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/InteractHint.tscn" id="3_hint"]
+
+[sub_resource type="Gradient" id="Gradient_core"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.8, 0.88, 1, 0.95, 0.3, 0.45, 0.85, 0.3, 0.1, 0.15, 0.3, 0)
+
+[sub_resource type="GradientTexture2D" id="GradTex_core"]
+gradient = SubResource("Gradient_core")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="FirstEntry" type="Control" unique_id=751598184]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_first")
+
+[node name="Background" type="ColorRect" parent="." unique_id=385173287]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.035, 0.043, 0.07, 1)
+
+[node name="IntroLayer" type="Node2D" parent="." unique_id=100436476]
+
+[node name="IntroBG" type="Polygon2D" parent="IntroLayer" unique_id=1378449830]
+color = Color(0.03, 0.04, 0.07, 1)
+polygon = PackedVector2Array(-2200, -1400, 2200, -1400, 2200, 1400, -2200, 1400)
+
+[node name="Ground" type="Polygon2D" parent="IntroLayer" unique_id=1899921589]
+color = Color(0.05, 0.07, 0.12, 1)
+polygon = PackedVector2Array(-2200, 220, 2200, 220, 2200, 1400, -2200, 1400)
+
+[node name="CoreGlow" type="Sprite2D" parent="IntroLayer" unique_id=489032311]
+position = Vector2(0, -60)
+scale = Vector2(2, 2)
+texture = SubResource("GradTex_core")
+
+[node name="LightA" type="Polygon2D" parent="IntroLayer" unique_id=1572518341]
+position = Vector2(-620, 120)
+color = Color(0.3, 0.6, 0.7, 0.55)
+polygon = PackedVector2Array(8, 0, 6.9, 4, 4, 6.9, 0, 8, -4, 6.9, -6.9, 4, -8, 0, -6.9, -4, -4, -6.9, 0, -8, 4, -6.9, 6.9, -4)
+
+[node name="LightB" type="Polygon2D" parent="IntroLayer" unique_id=1279040685]
+position = Vector2(520, 60)
+color = Color(0.3, 0.6, 0.7, 0.55)
+polygon = PackedVector2Array(8, 0, 6.9, 4, 4, 6.9, 0, 8, -4, 6.9, -6.9, 4, -8, 0, -6.9, -4, -4, -6.9, 0, -8, 4, -6.9, 6.9, -4)
+
+[node name="LightC" type="Polygon2D" parent="IntroLayer" unique_id=1728125783]
+position = Vector2(240, 200)
+color = Color(0.3, 0.6, 0.7, 0.55)
+polygon = PackedVector2Array(8, 0, 6.9, 4, 4, 6.9, 0, 8, -4, 6.9, -6.9, 4, -8, 0, -6.9, -4, -4, -6.9, 0, -8, 4, -6.9, 6.9, -4)
+
+[node name="Silhouette" type="Polygon2D" parent="IntroLayer" unique_id=1666465662]
+position = Vector2(0, 220)
+color = Color(0.85, 0.7, 0.35, 0.9)
+polygon = PackedVector2Array(-10, -28, 10, -28, 10, 0, -10, 0)
+
+[node name="Camera" type="Camera2D" parent="IntroLayer" unique_id=1091311422]
+
+[node name="StoryUILayer" type="CanvasLayer" parent="." unique_id=593585222]
+layer = 5
+visible = false
+
+[node name="CoreGlowUI" type="TextureRect" parent="StoryUILayer" unique_id=1042476619]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -300.0
+offset_right = 240.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="StoryDialog" parent="StoryUILayer" unique_id=177419867 instance=ExtResource("2_dialogbox")]
+transparent_mode = true
+
+[node name="TutorialLayer" type="Control" parent="." unique_id=701878732]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="World" type="Node2D" parent="TutorialLayer" unique_id=29427722]
+
+[node name="TargetA" type="Polygon2D" parent="TutorialLayer/World" unique_id=2089578135]
+color = Color(0.35, 0.85, 0.9, 0.85)
+polygon = PackedVector2Array(26, 0, 24, 9.9, 18.4, 18.4, 9.9, 24, 0, 26, -9.9, 24, -18.4, 18.4, -24, 9.9, -26, 0, -24, -9.9, -18.4, -18.4, -9.9, -24, 0, -26, 9.9, -24, 18.4, -18.4, 24, -9.9)
+
+[node name="TargetB" type="Polygon2D" parent="TutorialLayer/World" unique_id=149169194]
+color = Color(0.7, 0.45, 0.95, 0.85)
+polygon = PackedVector2Array(26, 0, 24, 9.9, 18.4, 18.4, 9.9, 24, 0, 26, -9.9, 24, -18.4, 18.4, -24, 9.9, -26, 0, -24, -9.9, -18.4, -18.4, -9.9, -24, 0, -26, 9.9, -24, 18.4, -18.4, 24, -9.9)
+
+[node name="Player" type="Polygon2D" parent="TutorialLayer/World" unique_id=820718730]
+color = Color(0.95, 0.78, 0.35, 1)
+polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[node name="TutorialDialog" parent="TutorialLayer" unique_id=412409564 instance=ExtResource("2_dialogbox")]
+layout_mode = 1
+transparent_mode = true
+advance_on_input = false
+
+[node name="FadeLayer" type="CanvasLayer" parent="." unique_id=1379460873]
+layer = 10
+
+[node name="InteractHint" parent="FadeLayer" unique_id=653642014 instance=ExtResource("3_hint")]
+visible = false
+
+[node name="ContinueHint" type="Label" parent="FadeLayer" unique_id=2053462870]
+visible = false
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -240.0
+offset_top = -48.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.65, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "点击继续..."
+horizontal_alignment = 2
+
+[node name="FadeOverlay" type="ColorRect" parent="FadeLayer" unique_id=552213023]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

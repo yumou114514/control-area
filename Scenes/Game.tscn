@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://cml80bmfdfkev"]
+
+[ext_resource type="Script" uid="uid://5nrlt87me6pm" path="res://Scripts/game.gd" id="1_game"]
+
+[node name="Game" type="Control" unique_id=1785652774]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_game")
+
+[node name="Background" type="ColorRect" parent="." unique_id=2141331100]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.075, 0.094, 0.133, 1)
+
+[node name="Center" type="CenterContainer" parent="." unique_id=732228446]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=2059224840]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="WelcomeLabel" type="Label" parent="Center/VBox" unique_id=388800222]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "欢迎！"
+vertical_alignment = 1
+
+[node name="HintLabel" type="Label" parent="Center/VBox" unique_id=699674315]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.66, 0.76, 1)
+text = "游戏主界面（待开发）"
+horizontal_alignment = 1
+
+[node name="LogoutButton" type="Button" parent="Center/VBox" unique_id=924484711]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "退出登录"
