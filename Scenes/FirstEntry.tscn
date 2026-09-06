@@ -1,20 +1,8 @@
 [gd_scene format=3 uid="uid://bysw8wk34ng3y"]
 
 [ext_resource type="Script" uid="uid://d0y8m45waxp5g" path="res://Scripts/first_entry.gd" id="1_first"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/DialogBox.tscn" id="2_dialogbox"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/InteractHint.tscn" id="3_hint"]
-
-[sub_resource type="Gradient" id="Gradient_core"]
-offsets = PackedFloat32Array(0, 0.5, 1)
-colors = PackedColorArray(0.8, 0.88, 1, 0.95, 0.3, 0.45, 0.85, 0.3, 0.1, 0.15, 0.3, 0)
-
-[sub_resource type="GradientTexture2D" id="GradTex_core"]
-gradient = SubResource("Gradient_core")
-width = 512
-height = 512
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(0.5, 0)
+[ext_resource type="PackedScene" uid="uid://p2ppj5k6tyvl" path="res://Scenes/UI/DialogBox.tscn" id="2_dialogbox"]
+[ext_resource type="PackedScene" uid="uid://clp8fo65d7vpg" path="res://Scenes/UI/InteractHint.tscn" id="3_hint"]
 
 [node name="FirstEntry" type="Control" unique_id=751598184]
 layout_mode = 3
@@ -38,17 +26,9 @@ color = Color(0.035, 0.043, 0.07, 1)
 [node name="IntroLayer" type="Node2D" parent="." unique_id=100436476]
 
 [node name="IntroBG" type="Polygon2D" parent="IntroLayer" unique_id=1378449830]
+position = Vector2(-1, 19)
 color = Color(0.03, 0.04, 0.07, 1)
 polygon = PackedVector2Array(-2200, -1400, 2200, -1400, 2200, 1400, -2200, 1400)
-
-[node name="Ground" type="Polygon2D" parent="IntroLayer" unique_id=1899921589]
-color = Color(0.05, 0.07, 0.12, 1)
-polygon = PackedVector2Array(-2200, 220, 2200, 220, 2200, 1400, -2200, 1400)
-
-[node name="CoreGlow" type="Sprite2D" parent="IntroLayer" unique_id=489032311]
-position = Vector2(0, -60)
-scale = Vector2(2, 2)
-texture = SubResource("GradTex_core")
 
 [node name="LightA" type="Polygon2D" parent="IntroLayer" unique_id=1572518341]
 position = Vector2(-620, 120)
@@ -68,7 +48,7 @@ polygon = PackedVector2Array(8, 0, 6.9, 4, 4, 6.9, 0, 8, -4, 6.9, -6.9, 4, -8, 0
 [node name="Silhouette" type="Polygon2D" parent="IntroLayer" unique_id=1666465662]
 position = Vector2(0, 220)
 color = Color(0.85, 0.7, 0.35, 0.9)
-polygon = PackedVector2Array(-10, -28, 10, -28, 10, 0, -10, 0)
+polygon = PackedVector2Array(-10, -28, 16.5, -27, 17.5, 1, -10, 0)
 
 [node name="Camera" type="Camera2D" parent="IntroLayer" unique_id=1091311422]
 
@@ -107,10 +87,6 @@ mouse_filter = 2
 
 [node name="TargetA" type="Polygon2D" parent="TutorialLayer/World" unique_id=2089578135]
 color = Color(0.35, 0.85, 0.9, 0.85)
-polygon = PackedVector2Array(26, 0, 24, 9.9, 18.4, 18.4, 9.9, 24, 0, 26, -9.9, 24, -18.4, 18.4, -24, 9.9, -26, 0, -24, -9.9, -18.4, -18.4, -9.9, -24, 0, -26, 9.9, -24, 18.4, -18.4, 24, -9.9)
-
-[node name="TargetB" type="Polygon2D" parent="TutorialLayer/World" unique_id=149169194]
-color = Color(0.7, 0.45, 0.95, 0.85)
 polygon = PackedVector2Array(26, 0, 24, 9.9, 18.4, 18.4, 9.9, 24, 0, 26, -9.9, 24, -18.4, 18.4, -24, 9.9, -26, 0, -24, -9.9, -18.4, -18.4, -9.9, -24, 0, -26, 9.9, -24, 18.4, -18.4, 24, -9.9)
 
 [node name="Player" type="Polygon2D" parent="TutorialLayer/World" unique_id=820718730]
