@@ -253,8 +253,17 @@ header,main,footer{position:relative;z-index:2}
 }
 .hero-actions{
   display:flex;gap:18px;justify-content:center;flex-wrap:wrap;
-  margin-bottom:72px;
+  margin-bottom:16px;
 }
+.alt-download{
+  font-size:.78rem;color:var(--muted);letter-spacing:.06em;
+  margin-bottom:56px;
+}
+.alt-download a{
+  color:var(--cyan);opacity:.7;text-decoration:underline;
+  text-underline-offset:3px;transition:opacity .25s;
+}
+.alt-download a:hover{opacity:1}
 
 .stats{
   display:flex;justify-content:center;gap:clamp(24px,6vw,72px);
@@ -816,7 +825,9 @@ footer{
       <a href="#features">游戏特色</a>
       <a href="#news">最新资讯</a>
     </nav>
-    <a href="https://github.com/yumou114514/control-area-offical/releases" target="_blank" class="btn btn-primary btn-sm">下载游戏</a>
+    <!-- 直接下载：data-download 由脚本统一接管 -->
+    <a href="https://github.com/yumou114514/control-area-offical/releases/latest/download/ControlArea-arm64-v8a.apk"
+       class="btn btn-primary btn-sm" data-download>下载游戏</a>
     <button class="burger" id="burger" aria-label="打开菜单">
       <span></span><span></span><span></span>
     </button>
@@ -843,10 +854,12 @@ footer{
       <p class="hero-sub">当人类命运悬于一线，谁来踏入管控区</p>
 
       <div class="hero-actions">
-        <a href="https://github.com/yumou114514/control-area-offical/releases" target="_blank" class="btn btn-primary">
+        <a href="https://github.com/yumou114514/control-area-offical/releases/latest/download/ControlArea-arm64-v8a.apk"
+           class="btn btn-primary" data-download>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          下载游戏
+          <span data-dl-label>下载游戏</span>
         </a>
+        <div class="alt-download">备用下载：<a href="https://codeberg.org/yumou/control-area-offical/releases" target="_blank" rel="noopener">Codeberg</a></div>
       </div>
 
     </div>
@@ -927,7 +940,7 @@ footer{
             <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
           </div>
           <h3>电影级叙事</h3>
-          <p>动人主线剧情，由国际顶尖乐团录制。</p>
+          <p>动人主线剧情，音乐由国际顶尖乐团录制。</p>
         </article>
       </div>
     </div>
@@ -950,6 +963,15 @@ footer{
           </div>
         </a>
 
+        <a href="#" class="news-item reveal">
+          <div class="news-date">2026 / 10 / 01</div>
+          <div class="news-main">
+            <h4>「管控区」公测正式开启</h4>
+            <p>公测将开放下载。</p>
+          </div>
+        </a>
+        
+
       </div>
     </div>
   </section>
@@ -960,10 +982,12 @@ footer{
       <div class="cta-box reveal">
         <h2>成为第一批踏入管控区的人</h2>
         <p>游戏已正式发布，立即下载开始你的搜打撤之旅</p>
-        <a href="https://github.com/yumou114514/control-area-offical/releases" target="_blank" class="btn btn-primary">
+        <a href="https://github.com/yumou114514/control-area-offical/releases/latest/download/ControlArea-arm64-v8a.apk"
+           class="btn btn-primary" data-download>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          立即下载
+          <span data-dl-label>立即下载</span>
         </a>
+        <div class="alt-download">备用下载：<a href="https://codeberg.org/yumou/control-area-offical/releases" target="_blank" rel="noopener">Codeberg</a></div>
 
         <div class="form-msg" id="formMsg"></div>
       </div>
@@ -984,14 +1008,14 @@ footer{
 
     <div class="foot-col">
       <h5>游戏</h5>
-      <a href="https://github.com/yumou114514/control-area-offical/releases" target="_blank">下载游戏</a>
+      <a href="https://github.com/yumou114514/control-area-offical/releases/latest/download/ControlArea-arm64-v8a.apk" data-download>下载游戏</a>
       <a href="#features">游戏特色</a>
       <a href="#news">更新日志</a>
     </div>
 
     <div class="foot-col">
       <h5>社区</h5>
-      <a href="https://codeberg.org/yumou/control-area-offical/issues" target="_blank">官方论坛&bug反馈</a>
+      <a href="https://codeberg.org/yumou/control-area-offical/issues" target="_blank" rel="noopener">官方论坛&bug反馈</a>
     </div>
   </div>
 
@@ -1115,8 +1139,6 @@ document.querySelectorAll('.reveal').forEach((el, i) => {
   io.observe(el);
 });
 
-document.querySelectorAll('.char-card').forEach(card => barObserver.observe(card));
-
 /* ===================== Hero 鼠标视差 ===================== */
 const heroBg = document.getElementById('heroBg');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1146,6 +1168,54 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
   });
 });
+
+/* ===================== GitHub Release 直连下载 ===================== */
+(function () {
+  const REPO       = 'yumou114514/control-area-offical';
+  const ASSET_NAME = 'ControlArea-arm64-v8a.apk';
+
+  // 兜底地址：只要每次 Release 都上传同名 asset，这个链接永远指向最新版
+  const FALLBACK = 'https://github.com/' + REPO + '/releases/latest/download/' + ASSET_NAME;
+  const API      = 'https://api.github.com/repos/' + REPO + '/releases/latest';
+
+  const links  = document.querySelectorAll('[data-download]');
+  const labels = document.querySelectorAll('[data-dl-label]');
+
+  // 1) 先写死兜底链接：即使 JS 被拦、API 限流，点击依然直接下载
+  links.forEach(function (a) {
+    a.href = FALLBACK;
+    a.removeAttribute('target');
+    a.setAttribute('rel', 'noopener');
+  });
+
+  // 2) 再问一次 API，拿到确切 tag 与 asset 地址（顺便显示版本号）
+  if (!window.fetch) return;
+
+  fetch(API, { headers: { Accept: 'application/vnd.github+json' } })
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      const assets = data.assets || [];
+
+      // 优先精确匹配文件名，找不到就退而求其次拿第一个 apk
+      const asset = assets.find(function (a) { return a.name === ASSET_NAME; })
+                 || assets.find(function (a) { return /\.apk$/i.test(a.name); });
+
+      if (asset && asset.browser_download_url) {
+        links.forEach(function (a) { a.href = asset.browser_download_url; });
+      }
+
+      const tag = data.tag_name || '';
+      if (tag) {
+        labels.forEach(function (el) { el.textContent = el.textContent + ' ' + tag; });
+      }
+    })
+    .catch(function () {
+      // 静默失败，保持兜底链接即可
+    });
+})();
 </script>
 </body>
 </html>
