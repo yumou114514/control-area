@@ -3,771 +3,1141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>管控区 Control-Area — 开放世界搜打撤</title>
+<title>Control Area 管控区 — 末世开放世界生存搜打撤</title>
+
 <style>
-/* ===================== 基础 ===================== */
+/* ============================================================
+   弹窗平台区域（新增）
+============================================================ */
+.platform-current .pc-hint{
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.04em;
+  color:var(--muted);
+  margin-top:-6px;
+  margin-bottom:16px;
+  line-height:1.7;
+}
+.platform-opt .po-info{flex:1;min-width:0}
+.platform-current .pc-file{
+  display:block;
+  font-family:var(--mono);
+  font-size:.68rem;
+  letter-spacing:.02em;
+  color:var(--green);
+  background:rgba(163,224,72,.05);
+  border:1px dashed rgba(163,224,72,.22);
+  padding:9px 12px;
+  margin-bottom:18px;
+  line-height:1.6;
+  word-break:break-all;
+}
+.platform-opt .po-info{flex:1;min-width:0}
+.platform-opt .po-file{
+  font-family:var(--mono);
+  font-size:.6rem;
+  color:var(--muted);
+  letter-spacing:.02em;
+  line-height:1.5;
+  word-break:break-all;
+}
+/* ============================================================
+   基础
+============================================================ */
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#05060b;
-  --cyan:#22d3ee;
-  --violet:#8b5cf6;
-  --magenta:#f43f8e;
-  --text:#e8eef8;
-  --muted:#8894ab;
-  --line:rgba(255,255,255,.09);
-  --radius:20px;
+  --bg:#0a0c08;
+  --bg-2:#0e1109;
+  --panel:#12160d;
+  --panel-2:#171c10;
+  --green:#a3e048;
+  --green-dim:#7ca832;
+  --green-deep:#4a6518;
+  --amber:#d0652c;
+  --alert:#e63b2e;
+  --text:#dfe6d3;
+  --muted:#79866f;
+  --line:rgba(163,224,72,.13);
+  --line-2:rgba(163,224,72,.3);
+  --mono:ui-monospace,'SF Mono','Cascadia Code','Consolas','Menlo','Courier New',monospace;
+  --sans:system-ui,-apple-system,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
 }
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);
   color:var(--text);
-  font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-family:var(--sans);
+  line-height:1.7;
   overflow-x:hidden;
-  line-height:1.6;
   -webkit-font-smoothing:antialiased;
 }
 a{color:inherit;text-decoration:none}
-img{max-width:100%;display:block}
-::selection{background:var(--cyan);color:#04060c}
+img,svg{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::selection{background:var(--green);color:#0a0c08}
 
-/* 滚动条 */
-::-webkit-scrollbar{width:9px}
-::-webkit-scrollbar-track{background:#05060b}
-::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--cyan),var(--violet));border-radius:9px}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:#070905}
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,var(--green-deep),var(--green-dim));
+  border:2px solid #070905;
+}
+::-webkit-scrollbar-thumb:hover{background:var(--green)}
 
-/* ===================== 星空画布 ===================== */
-#stars{
-  position:fixed;inset:0;
-  z-index:0;pointer-events:none;
+/* ============================================================
+   全局覆盖层
+============================================================ */
+#dust{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+.crt{
+  position:fixed;inset:0;z-index:98;pointer-events:none;
+  background:repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,.22) 0 1px,
+    transparent 1px 3px
+  );
+  opacity:.4;
+}
+.vignette{
+  position:fixed;inset:0;z-index:97;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 45%,transparent 45%,rgba(4,6,3,.7) 100%);
+}
+.noise{
+  position:fixed;inset:-50%;z-index:96;pointer-events:none;
+  opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:noiseShift .7s steps(4) infinite;
+}
+@keyframes noiseShift{
+  0%{transform:translate(0,0)}
+  25%{transform:translate(-2%,1%)}
+  50%{transform:translate(1%,-2%)}
+  75%{transform:translate(-1%,-1%)}
+  100%{transform:translate(2%,1%)}
 }
 
-/* 让内容浮在画布之上 */
-header,main,footer{position:relative;z-index:2}
-
-/* ===================== 顶部滚动进度 ===================== */
 .progress{
   position:fixed;top:0;left:0;height:2px;width:0%;
-  background:linear-gradient(90deg,var(--cyan),var(--violet),var(--magenta));
+  background:linear-gradient(90deg,var(--green-dim),var(--green),#eaff9a);
+  box-shadow:0 0 14px rgba(163,224,72,.7);
   z-index:100;
-  box-shadow:0 0 12px rgba(34,211,238,.8);
   transition:width .08s linear;
 }
 
-/* ===================== 导航 ===================== */
+/* 危险条纹 */
+.hazard{
+  height:11px;
+  background:repeating-linear-gradient(
+    -45deg,
+    var(--green) 0 13px,
+    #0a0c08 13px 26px
+  );
+  opacity:.42;
+}
+.hazard.thin{height:6px;opacity:.3}
+
+/* ============================================================
+   导航
+============================================================ */
 .nav{
-  position:fixed;top:0;left:0;right:0;
-  z-index:90;
-  transition:background .4s,backdrop-filter .4s,border-color .4s;
+  position:fixed;top:0;left:0;right:0;z-index:90;
+  transition:background .35s,backdrop-filter .35s,border-color .35s;
   border-bottom:1px solid transparent;
 }
 .nav.scrolled{
-  background:rgba(5,6,11,.78);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
+  background:rgba(8,10,6,.9);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
   border-bottom-color:var(--line);
 }
 .nav-inner{
-  max-width:1280px;margin:0 auto;
-  padding:16px 28px;
-  display:flex;align-items:center;gap:40px;
+  max-width:1320px;margin:0 auto;
+  padding:14px 26px;
+  display:flex;align-items:center;gap:34px;
 }
-.logo{display:flex;align-items:center;gap:12px;flex-shrink:0}
-.logo-mark{
-  width:30px;height:30px;border-radius:9px;
-  background:conic-gradient(from 0deg,var(--cyan),var(--violet),var(--magenta),var(--cyan));
-  position:relative;
-  animation:spin 8s linear infinite;
-  box-shadow:0 0 22px rgba(34,211,238,.55);
+.brand{display:flex;align-items:center;gap:11px;flex-shrink:0}
+.brand-mark{
+  width:34px;height:34px;flex-shrink:0;
+  color:var(--green);
+  filter:drop-shadow(0 0 8px rgba(163,224,72,.55));
+  animation:trefoilSpin 26s linear infinite;
 }
-.logo-mark::after{
-  content:'';position:absolute;inset:5px;border-radius:5px;background:#05060b;
+@keyframes trefoilSpin{to{transform:rotate(360deg)}}
+.brand-txt{
+  font-family:var(--mono);
+  font-size:.86rem;font-weight:700;letter-spacing:.14em;
+  line-height:1.15;
 }
-@keyframes spin{to{transform:rotate(360deg)}}
-.logo-text{
-  font-size:1.15rem;font-weight:800;letter-spacing:.18em;
-  display:flex;align-items:baseline;gap:8px;
+.brand-txt b{display:block;font-size:.96rem;letter-spacing:.18em}
+.brand-txt span{
+  display:block;font-size:.58rem;color:var(--green);
+  letter-spacing:.28em;font-weight:400;
 }
-.logo-text em{
-  font-style:normal;font-size:.62rem;font-weight:600;
-  letter-spacing:.32em;color:var(--cyan);opacity:.85;
-}
-.nav-links{
-  display:flex;gap:34px;margin-left:auto;
-}
+.nav-links{display:flex;gap:30px;margin-left:auto}
 .nav-links a{
-  font-size:.9rem;color:var(--muted);letter-spacing:.06em;
-  position:relative;transition:color .25s;
+  font-family:var(--mono);
+  font-size:.78rem;letter-spacing:.1em;color:var(--muted);
+  position:relative;padding:4px 0;transition:color .25s;
 }
-.nav-links a::after{
-  content:'';position:absolute;left:0;bottom:-6px;width:0;height:1px;
-  background:linear-gradient(90deg,var(--cyan),var(--violet));
+.nav-links a::before{
+  content:'';
+  position:absolute;left:0;bottom:0;
+  width:0;height:1px;background:var(--green);
   transition:width .3s;
 }
-.nav-links a:hover{color:var(--text)}
-.nav-links a:hover::after{width:100%}
+.nav-links a:hover{color:var(--green)}
+.nav-links a:hover::before{width:100%}
 
 .burger{
   display:none;flex-direction:column;gap:5px;
-  background:none;border:none;cursor:pointer;padding:6px;margin-left:auto;
+  background:none;border:none;cursor:pointer;
+  padding:6px;margin-left:auto;
 }
 .burger span{
-  width:22px;height:2px;background:var(--text);border-radius:2px;transition:.3s;
+  width:22px;height:2px;background:var(--green);
+  transition:.3s;
 }
 .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .burger.open span:nth-child(2){opacity:0}
 .burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
-/* ===================== 按钮 ===================== */
+/* ============================================================
+   按钮
+============================================================ */
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
-  padding:.92rem 2.1rem;border-radius:999px;
-  font-size:.92rem;font-weight:700;letter-spacing:.08em;
-  border:1px solid transparent;cursor:pointer;
-  transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,background .3s,color .3s,border-color .3s;
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  font-family:var(--mono);
+  font-size:.8rem;font-weight:700;letter-spacing:.12em;
+  padding:1rem 2rem;
+  border:1px solid transparent;
+  cursor:pointer;
   white-space:nowrap;
-  font-family:inherit;
+  background:none;
+  color:inherit;
+  clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);
+  transition:transform .25s,box-shadow .25s,background .25s,color .25s,border-color .25s;
+  position:relative;
 }
-.btn-sm{padding:.62rem 1.4rem;font-size:.82rem}
-.btn-primary{
-  background:linear-gradient(135deg,var(--cyan),var(--violet));
-  color:#03050b;
-  box-shadow:0 0 28px rgba(34,211,238,.32);
+.btn-sm{padding:.6rem 1.25rem;font-size:.72rem}
+.btn-green{
+  background:var(--green);
+  color:#0a0c08;
+  box-shadow:0 0 26px rgba(163,224,72,.3);
 }
-.btn-primary:hover{
-  transform:translateY(-3px);
-  box-shadow:0 6px 44px rgba(34,211,238,.62);
+.btn-green:hover{
+  background:#b8f060;
+  transform:translateY(-2px);
+  box-shadow:0 0 42px rgba(163,224,72,.55);
 }
 .btn-ghost{
-  border-color:rgba(255,255,255,.2);
-  color:var(--text);
-  background:rgba(255,255,255,.03);
-  backdrop-filter:blur(10px);
+  border-color:var(--line-2);
+  color:var(--green);
+  background:rgba(163,224,72,.04);
 }
 .btn-ghost:hover{
-  border-color:var(--cyan);color:var(--cyan);
-  background:rgba(34,211,238,.08);
-  transform:translateY(-3px);
+  background:rgba(163,224,72,.12);
+  border-color:var(--green);
+  transform:translateY(-2px);
 }
+.btn-disabled{
+  background:rgba(255,255,255,.06);
+  color:var(--muted);
+  border:1px solid rgba(255,255,255,.09);
+  cursor:pointer;
+  opacity:.7;
+}
+.btn-disabled:hover{
+  background:rgba(255,255,255,.08);
+  opacity:.85;
+}
+.btn svg{width:13px;height:13px;flex-shrink:0}
 
-/* ===================== Hero ===================== */
+/* ============================================================
+   Hero
+============================================================ */
 .hero{
   position:relative;
-  min-height:100vh;
-  display:flex;align-items:center;justify-content:center;
-  text-align:center;
+  min-height:100svh;
+  display:flex;align-items:center;
+  padding:130px 26px 90px;
   overflow:hidden;
-  padding:140px 24px 100px;
 }
-.hero-bg{
-  position:absolute;inset:-10%;
-  transition:transform .6s cubic-bezier(.2,.8,.2,1);
-  will-change:transform;
-}
-.orb{
+.hero-fx{position:absolute;inset:0;z-index:0}
+.hero-fx .glow{
   position:absolute;border-radius:50%;
-  filter:blur(100px);
-  will-change:transform;
+  filter:blur(110px);will-change:transform;
 }
-.orb-1{
+.g1{
+  width:min(680px,85vw);aspect-ratio:1;
+  background:radial-gradient(circle,rgba(163,224,72,.2),transparent 70%);
+  top:-18%;left:-8%;
+  animation:drift1 20s ease-in-out infinite;
+}
+.g2{
   width:min(560px,70vw);aspect-ratio:1;
-  background:radial-gradient(circle,rgba(34,211,238,.75),transparent 70%);
-  top:2%;left:6%;
-  animation:float1 14s ease-in-out infinite;
+  background:radial-gradient(circle,rgba(208,101,44,.22),transparent 70%);
+  bottom:-24%;right:-6%;
+  animation:drift2 26s ease-in-out infinite;
 }
-.orb-2{
-  width:min(660px,80vw);aspect-ratio:1;
-  background:radial-gradient(circle,rgba(139,92,246,.7),transparent 70%);
-  bottom:-18%;right:2%;
-  animation:float2 18s ease-in-out infinite;
-}
-.orb-3{
+.g3{
   width:min(420px,55vw);aspect-ratio:1;
-  background:radial-gradient(circle,rgba(244,63,142,.5),transparent 70%);
-  top:35%;left:48%;
-  animation:float1 22s ease-in-out infinite reverse;
+  background:radial-gradient(circle,rgba(230,59,46,.13),transparent 70%);
+  top:38%;left:52%;
+  animation:drift1 32s ease-in-out infinite reverse;
 }
-@keyframes float1{
+@keyframes drift1{
   0%,100%{transform:translate(0,0) scale(1)}
-  50%{transform:translate(50px,-40px) scale(1.12)}
+  50%{transform:translate(60px,-44px) scale(1.14)}
 }
-@keyframes float2{
+@keyframes drift2{
   0%,100%{transform:translate(0,0) scale(1)}
-  50%{transform:translate(-60px,45px) scale(1.08)}
+  50%{transform:translate(-70px,40px) scale(1.1)}
 }
-.grid-lines{
+.scanlines-bg{
   position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(34,211,238,.075) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(34,211,238,.075) 1px,transparent 1px);
-  background-size:62px 62px;
-  -webkit-mask-image:radial-gradient(ellipse 75% 60% at 50% 48%,#000 0%,transparent 72%);
-  mask-image:radial-gradient(ellipse 75% 60% at 50% 48%,#000 0%,transparent 72%);
+    linear-gradient(rgba(163,224,72,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(163,224,72,.05) 1px,transparent 1px);
+  background-size:52px 52px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 65% at 40% 50%,#000,transparent 75%);
+  mask-image:radial-gradient(ellipse 70% 65% at 40% 50%,#000,transparent 75%);
 }
-.hero-vignette{
-  position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(5,6,11,.85) 78%,var(--bg) 100%);
+.hero-sweep{
+  position:absolute;left:0;right:0;height:180px;
+  background:linear-gradient(180deg,transparent,rgba(163,224,72,.06),transparent);
+  animation:sweepDown 7s linear infinite;
+  pointer-events:none;
 }
-.hero-content{position:relative;max-width:900px;width:100%}
+@keyframes sweepDown{
+  0%{top:-180px}
+  100%{top:100%}
+}
+.hero-inner{
+  position:relative;z-index:2;
+  max-width:1320px;margin:0 auto;width:100%;
+  display:grid;
+  grid-template-columns:1.3fr 1fr;
+  gap:60px;
+  align-items:center;
+}
 
-.tag{
+.hero-status{
   display:inline-flex;align-items:center;gap:10px;
-  padding:8px 20px;border-radius:999px;
-  border:1px solid rgba(34,211,238,.28);
-  background:rgba(34,211,238,.07);
-  font-size:.76rem;letter-spacing:.2em;color:#9fe8f5;
-  margin-bottom:34px;
-  backdrop-filter:blur(10px);
+  font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.2em;
+  color:var(--green);
+  border:1px solid var(--line-2);
+  padding:7px 15px;
+  background:rgba(163,224,72,.05);
+  margin-bottom:26px;
 }
-.tag .dot{
-  width:6px;height:6px;border-radius:50%;background:var(--cyan);
-  box-shadow:0 0 10px var(--cyan);
-  animation:pulse 1.8s ease-in-out infinite;
+.hero-status .led{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--amber);
+  box-shadow:0 0 10px var(--amber);
+  animation:blink 1.3s steps(2) infinite;
 }
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
 
 .hero-title{
-  font-size:clamp(64px,15vw,180px);
+  font-family:var(--mono);
   font-weight:900;
-  letter-spacing:.06em;
-  line-height:1;
-  background:linear-gradient(180deg,#ffffff 0%,#bfe9ff 40%,#7c9dc7 75%,#4a5d78 100%);
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 44px rgba(34,211,238,.4));
-  margin-bottom:8px;
-}
-.hero-title-en{
-  font-size:clamp(11px,1.6vw,15px);
-  letter-spacing:1.1em;
-  color:var(--cyan);
-  opacity:.75;
-  margin-bottom:26px;
-  padding-left:1.1em;
-}
-.hero-sub{
-  font-size:clamp(1rem,2.2vw,1.28rem);
-  color:#b6c2d6;
-  letter-spacing:.14em;
-  margin-bottom:44px;
-  font-weight:300;
-}
-.hero-actions{
-  display:flex;gap:18px;justify-content:center;flex-wrap:wrap;
+  font-size:clamp(2.4rem,7vw,5.6rem);
+  line-height:.94;
+  letter-spacing:-.01em;
   margin-bottom:16px;
 }
-.alt-download{
-  font-size:.78rem;color:var(--muted);letter-spacing:.06em;
-  margin-bottom:56px;
+.hero-title span{display:block}
+.hero-title .hl{
+  color:var(--green);
+  text-shadow:0 0 44px rgba(163,224,72,.42);
+  letter-spacing:.02em;
 }
-.alt-download a{
-  color:var(--cyan);opacity:.7;text-decoration:underline;
-  text-underline-offset:3px;transition:opacity .25s;
+.hero-cn{
+  font-size:clamp(1.4rem,3.4vw,2.2rem);
+  font-weight:800;
+  letter-spacing:.38em;
+  color:var(--text);
+  margin-bottom:6px;
+  padding-left:.38em;
 }
-.alt-download a:hover{opacity:1}
+.hero-cn-sub{
+  font-family:var(--mono);
+  font-size:.7rem;letter-spacing:.28em;
+  color:var(--muted);
+  margin-bottom:28px;
+  padding-left:.2em;
+}
+.hero-desc{
+  font-size:clamp(.92rem,1.6vw,1rem);
+  color:#a9b59c;
+  max-width:540px;
+  line-height:1.95;
+  margin-bottom:34px;
+}
+.hero-desc b{color:var(--green);font-weight:600}
 
-.stats{
-  display:flex;justify-content:center;gap:clamp(24px,6vw,72px);
+.hero-tags{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-bottom:34px;
+}
+.hero-tags span{
+  font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.14em;
+  padding:5px 12px;
+  border:1px solid var(--line);
+  color:var(--muted);
+  background:rgba(255,255,255,.02);
+}
+
+/* 下载区 */
+.download-area{
+  display:flex;
+  align-items:center;
+  gap:18px;
   flex-wrap:wrap;
 }
-.stat{position:relative}
-.stat + .stat::before{
-  content:'';position:absolute;left:calc(-1 * clamp(12px,3vw,36px));top:50%;
-  transform:translateY(-50%);
-  width:1px;height:34px;background:var(--line);
+.dl-main{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-family:var(--mono);
+  font-size:.9rem;font-weight:800;letter-spacing:.14em;
+  padding:1.05rem 2.4rem;
+  background:var(--green);
+  color:#0a0c08;
+  box-shadow:0 0 32px rgba(163,224,72,.32);
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  transition:transform .25s,box-shadow .25s,background .25s;
 }
-.stat b{
-  display:block;font-size:clamp(1.4rem,3.4vw,2rem);font-weight:800;
-  background:linear-gradient(135deg,#fff,var(--cyan));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:.02em;
+.dl-main:hover{
+  background:#b8f060;
+  transform:translateY(-2px);
+  box-shadow:0 0 48px rgba(163,224,72,.6);
 }
-.stat span{font-size:.74rem;letter-spacing:.24em;color:var(--muted)}
+.dl-main.is-disabled{
+  background:rgba(255,255,255,.07);
+  color:var(--muted);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:none;
+}
+.dl-main.is-disabled:hover{
+  background:rgba(255,255,255,.1);
+  transform:translateY(-2px);
+  box-shadow:none;
+}
+.dl-main svg{width:16px;height:16px;flex-shrink:0}
 
-.scroll-hint{
-  position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
-  font-size:.66rem;letter-spacing:.34em;color:var(--muted);
-  display:flex;flex-direction:column;align-items:center;gap:12px;
+.dl-alt{
+  font-family:var(--mono);
+  font-size:.72rem;letter-spacing:.1em;
+  color:var(--green);
+  opacity:.8;
+  border-bottom:1px dashed rgba(163,224,72,.35);
+  transition:opacity .25s;
+  padding-bottom:2px;
 }
-.scroll-hint i{
-  display:block;width:1px;height:44px;
-  background:linear-gradient(180deg,var(--cyan),transparent);
-  animation:drop 2s ease-in-out infinite;
-}
-@keyframes drop{
-  0%{transform:scaleY(0);transform-origin:top;opacity:0}
-  50%{transform:scaleY(1);transform-origin:top;opacity:1}
-  100%{transform:scaleY(1);transform-origin:bottom;opacity:0}
+.dl-alt:hover{opacity:1}
+.dl-alt.is-disabled{
+  color:var(--muted);
+  opacity:.45;
+  border-bottom-color:rgba(121,134,111,.3);
+  cursor:not-allowed;
+  pointer-events:none;
 }
 
-/* ===================== 跑马灯 ===================== */
-.marquee{
+/* 右侧手机面板 */
+.phone{
+  position:relative;
+  max-width:380px;
+  margin-left:auto;
+  border:1px solid var(--line-2);
+  background:rgba(10,13,7,.86);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+  box-shadow:0 0 0 1px rgba(0,0,0,.6),0 30px 70px -30px rgba(0,0,0,.9);
+  overflow:hidden;
+}
+.phone-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 14px;
+  border-bottom:1px solid var(--line);
+  background:rgba(163,224,72,.05);
+  font-family:var(--mono);
+  font-size:.66rem;letter-spacing:.14em;
+  color:var(--green);
+}
+.phone-bar .sig{
+  display:flex;gap:2px;align-items:flex-end;
+  margin-left:auto;
+}
+.phone-bar .sig i{
+  width:3px;background:var(--green);
+  display:block;
+}
+.phone-bar .sig i:nth-child(1){height:4px}
+.phone-bar .sig i:nth-child(2){height:7px}
+.phone-bar .sig i:nth-child(3){height:10px}
+.phone-bar .sig i:nth-child(4){height:13px;opacity:.25}
+.phone-bar .bat{
+  font-size:.62rem;color:var(--green);
+  margin-left:8px;
+  border:1px solid var(--green);
+  padding:1px 5px;
+  opacity:.85;
+}
+
+.phone-body{padding:18px 16px 20px}
+.phone-map{
+  position:relative;
+  aspect-ratio:16/10;
+  border:1px solid var(--line);
+  background:
+    radial-gradient(circle at 30% 30%,rgba(163,224,72,.14),transparent 55%),
+    radial-gradient(circle at 75% 70%,rgba(208,101,44,.14),transparent 55%),
+    #070905;
+  overflow:hidden;
+  margin-bottom:16px;
+}
+.phone-map::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(163,224,72,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(163,224,72,.07) 1px,transparent 1px);
+  background-size:22px 22px;
+}
+.phone-map .dot{
+  position:absolute;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+  top:38%;left:42%;
+  animation:pulse 2s ease-in-out infinite;
+}
+.phone-map .dot::after{
+  content:'';
+  position:absolute;inset:-8px;
+  border:1px solid var(--green);
+  border-radius:50%;
+  animation:ringPulse 2.4s ease-out infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@keyframes ringPulse{
+  0%{transform:scale(.6);opacity:.9}
+  100%{transform:scale(1.6);opacity:0}
+}
+.phone-map .zone-tag{
+  position:absolute;
+  top:10px;left:10px;
+  font-family:var(--mono);
+  font-size:.6rem;letter-spacing:.14em;
+  color:var(--green);
+  border:1px solid var(--line-2);
+  padding:3px 8px;
+  background:rgba(0,0,0,.5);
+}
+
+.phone-row{
+  display:flex;justify-content:space-between;gap:10px;
+  font-family:var(--mono);
+  font-size:.72rem;
+  padding:7px 0;
+  border-bottom:1px dashed rgba(163,224,72,.1);
+}
+.phone-row:last-child{border-bottom:none}
+.phone-row .k{color:var(--muted);letter-spacing:.06em}
+.phone-row .v{color:var(--green);font-weight:700;letter-spacing:.04em}
+.phone-row .v.warn{color:var(--amber)}
+.phone-row .v.bad{color:var(--alert)}
+
+/* ============================================================
+   数据条
+============================================================ */
+.statbar{
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
-  background:rgba(255,255,255,.02);
-  padding:16px 0;
-  overflow:hidden;
+  background:rgba(255,255,255,.015);
+  position:relative;z-index:2;
+}
+.statbar-inner{
+  max-width:1320px;margin:0 auto;
+  padding:24px 26px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+.stat-cell{
+  text-align:center;
   position:relative;
-  z-index:2;
 }
-.marquee::before,.marquee::after{
-  content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none;
+.stat-cell + .stat-cell::before{
+  content:'';position:absolute;left:-10px;top:50%;
+  transform:translateY(-50%);
+  width:1px;height:32px;background:var(--line);
 }
-.marquee::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
-.marquee::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
-.marquee-track{
-  display:flex;width:max-content;
-  animation:marquee 32s linear infinite;
-}
-.marquee-track span{
-  display:inline-flex;align-items:center;gap:44px;
-  padding-right:44px;
-  font-size:.8rem;letter-spacing:.3em;color:var(--muted);
-  white-space:nowrap;
-}
-.marquee-track span i{
-  font-style:normal;color:var(--cyan);opacity:.6;font-size:.6rem;
-}
-@keyframes marquee{to{transform:translateX(-50%)}}
-
-/* ===================== 通用区块 ===================== */
-section{padding:120px 24px}
-.wrap{max-width:1200px;margin:0 auto}
-.sec-head{max-width:680px;margin-bottom:64px}
-.sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
-.sec-kicker{
-  display:inline-block;
-  font-size:.72rem;letter-spacing:.3em;
-  color:var(--cyan);margin-bottom:18px;
-  font-weight:600;
-}
-.sec-title{
-  font-size:clamp(1.9rem,4.4vw,3rem);
-  font-weight:800;line-height:1.25;
+.stat-cell b{
+  display:block;
+  font-family:var(--mono);
+  font-size:clamp(1.05rem,2.3vw,1.55rem);
+  font-weight:800;
+  color:var(--green);
   letter-spacing:.02em;
+  line-height:1.25;
+}
+.stat-cell span{
+  font-family:var(--mono);
+  font-size:.64rem;letter-spacing:.18em;color:var(--muted);
+}
+
+/* ============================================================
+   通用区块
+============================================================ */
+section{padding:106px 26px;position:relative;z-index:2}
+.wrap{max-width:1320px;margin:0 auto}
+.sec-head{max-width:720px;margin-bottom:54px}
+.sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+.kicker{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.24em;
+  color:var(--green);
   margin-bottom:18px;
 }
-.sec-title em{
-  font-style:normal;
-  background:linear-gradient(120deg,var(--cyan),var(--violet) 60%,var(--magenta));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+.kicker::before{
+  content:'';width:22px;height:1px;background:var(--green);
 }
-.sec-desc{color:var(--muted);font-size:1rem;line-height:1.85}
+.sec-head.center .kicker::after{
+  content:'';width:22px;height:1px;background:var(--green);
+}
+.sec-title{
+  font-size:clamp(1.65rem,3.9vw,2.65rem);
+  font-weight:800;line-height:1.32;
+  letter-spacing:.01em;
+  margin-bottom:16px;
+}
+.sec-title em{
+  font-style:normal;color:var(--green);
+  text-shadow:0 0 32px rgba(163,224,72,.3);
+}
+.sec-desc{color:var(--muted);font-size:.95rem;line-height:1.95}
 
-/* 滚动进场 */
 .reveal{
-  opacity:0;transform:translateY(38px);
-  transition:opacity .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,.8,.2,1);
+  opacity:0;transform:translateY(30px);
+  transition:opacity .85s cubic-bezier(.2,.8,.2,1),transform .85s cubic-bezier(.2,.8,.2,1);
 }
 .reveal.in{opacity:1;transform:none}
 
-/* ===================== 特色卡片 ===================== */
-.features-grid{
+/* ============================================================
+   核心循环
+============================================================ */
+.loop-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
-  gap:22px;
-}
-.card{
-  position:relative;
-  padding:38px 32px 42px;
-  border-radius:var(--radius);
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  background:var(--line);
   border:1px solid var(--line);
-  background:linear-gradient(165deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
-  overflow:hidden;
-  transition:transform .45s cubic-bezier(.2,.8,.2,1),border-color .45s;
 }
-.card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--cyan),var(--violet),transparent);
-  opacity:0;transition:opacity .45s;
+.loop-item{
+  background:var(--panel);
+  padding:36px 28px 40px;
+  position:relative;
+  transition:background .4s;
 }
-.card::after{
-  content:'';position:absolute;
-  width:260px;height:260px;border-radius:50%;
-  background:radial-gradient(circle,rgba(34,211,238,.28),transparent 70%);
-  top:-130px;right:-100px;
-  opacity:0;transition:opacity .5s;
-  filter:blur(24px);
+.loop-item::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--green);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1);
 }
-.card:hover{
-  transform:translateY(-8px);
-  border-color:rgba(34,211,238,.34);
+.loop-item:hover{background:var(--panel-2)}
+.loop-item:hover::before{transform:scaleX(1)}
+.loop-num{
+  font-family:var(--mono);
+  font-size:.66rem;letter-spacing:.24em;
+  color:var(--green-deep);
+  margin-bottom:20px;
 }
-.card:hover::before,.card:hover::after{opacity:1}
-.card-icon{
-  width:52px;height:52px;border-radius:15px;
-  display:grid;place-items:center;
-  background:linear-gradient(140deg,rgba(34,211,238,.18),rgba(139,92,246,.18));
-  border:1px solid rgba(34,211,238,.24);
-  margin-bottom:26px;
-  position:relative;z-index:1;
-  transition:transform .45s;
+.loop-item h3{
+  font-size:1.35rem;font-weight:800;
+  letter-spacing:.08em;margin-bottom:14px;
+  color:var(--green);
 }
-.card:hover .card-icon{transform:scale(1.08) rotate(-4deg)}
-.card-icon svg{width:24px;height:24px;stroke:var(--cyan);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.card h3{
-  font-size:1.16rem;font-weight:700;margin-bottom:12px;
-  letter-spacing:.04em;position:relative;z-index:1;
-}
-.card p{
-  font-size:.9rem;color:var(--muted);line-height:1.85;
-  position:relative;z-index:1;
-}
-.card-num{
-  position:absolute;right:26px;top:26px;
-  font-size:2.6rem;font-weight:900;
-  color:rgba(255,255,255,.045);
-  letter-spacing:-.04em;line-height:1;
+.loop-item p{
+  font-size:.85rem;color:#94a088;
+  line-height:1.85;
 }
 
-/* ===================== 角色 ===================== */
-.chars{
+/* ============================================================
+   玩法系统
+============================================================ */
+.sys-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:16px;
+}
+.sys{
+  border:1px solid var(--line);
+  background:rgba(18,22,13,.7);
+  padding:28px 24px 30px;
+  position:relative;
+  transition:border-color .4s,transform .4s,background .4s;
+}
+.sys:hover{
+  border-color:var(--line-2);
+  transform:translateY(-5px);
+  background:rgba(24,29,17,.85);
+}
+.sys-top{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:16px;
+}
+.sys-ico{
+  width:32px;height:32px;flex-shrink:0;
+  color:var(--green);
+}
+.sys-ico svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.sys h4{
+  font-size:1rem;font-weight:700;letter-spacing:.05em;
+}
+.sys p{font-size:.83rem;color:var(--muted);line-height:1.85}
+
+/* ============================================================
+   玩家定位
+============================================================ */
+.player-block{
+  display:grid;
+  grid-template-columns:1.1fr 1fr;
+  gap:50px;
+  align-items:center;
+}
+.player-quote{
+  border-left:3px solid var(--green);
+  padding:6px 0 6px 26px;
+  font-size:1.1rem;
+  line-height:2;
+  color:#c2cdb4;
+}
+.player-quote b{color:var(--green);font-weight:700}
+.player-list{
+  display:flex;flex-direction:column;gap:14px;
+}
+.player-list-item{
+  border:1px solid var(--line);
+  background:rgba(18,22,13,.6);
+  padding:18px 20px;
+  display:flex;gap:14px;align-items:flex-start;
+  transition:border-color .35s,background .35s;
+}
+.player-list-item:hover{
+  border-color:var(--line-2);
+  background:rgba(24,29,17,.8);
+}
+.player-list-item .n{
+  font-family:var(--mono);
+  font-size:.72rem;font-weight:700;
+  color:var(--green);
+  flex-shrink:0;
+  padding-top:2px;
+}
+.player-list-item h5{
+  font-size:.92rem;font-weight:700;
+  letter-spacing:.04em;margin-bottom:4px;
+}
+.player-list-item p{font-size:.8rem;color:var(--muted);line-height:1.75}
+
+/* ============================================================
+   开发信息
+============================================================ */
+.studio-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+.studio-card{
+  border:1px solid var(--line);
+  background:var(--panel);
+  padding:30px 26px 32px;
+  transition:border-color .4s,transform .4s;
+}
+.studio-card:hover{
+  border-color:var(--line-2);
+  transform:translateY(-4px);
+}
+.studio-card .label{
+  font-family:var(--mono);
+  font-size:.64rem;letter-spacing:.22em;
+  color:var(--green);
+  margin-bottom:16px;
+}
+.studio-card h4{
+  font-size:1.1rem;font-weight:800;
+  letter-spacing:.04em;margin-bottom:10px;
+}
+.studio-card p{font-size:.83rem;color:var(--muted);line-height:1.8}
+.studio-card .tags{
+  margin-top:16px;display:flex;flex-wrap:wrap;gap:6px;
+}
+.studio-card .tags span{
+  font-family:var(--mono);
+  font-size:.62rem;letter-spacing:.1em;
+  padding:3px 9px;
+  border:1px solid var(--line);
+  color:var(--muted);
+}
+
+/* ============================================================
+   下载区
+============================================================ */
+.download-section{
   background:
-    radial-gradient(ellipse 60% 50% at 50% 0%,rgba(139,92,246,.14),transparent 70%);
+    radial-gradient(ellipse 70% 60% at 50% 0%,rgba(163,224,72,.07),transparent 70%);
 }
-.char-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:24px;
-}
-.char-card{
-  border-radius:var(--radius);
-  border:1px solid var(--line);
-  background:#080a12;
-  overflow:hidden;
-  transition:transform .5s cubic-bezier(.2,.8,.2,1),border-color .5s,box-shadow .5s;
+.dl-box{
+  border:1px solid var(--line-2);
+  background:var(--panel);
+  padding:54px 40px;
+  text-align:center;
   position:relative;
-}
-.char-card:hover{
-  transform:translateY(-10px);
-  border-color:color-mix(in srgb,var(--c1) 45%,transparent);
-  box-shadow:0 26px 70px -28px var(--c1);
-}
-.char-visual{
-  position:relative;
-  height:300px;
   overflow:hidden;
-  background:linear-gradient(180deg,#0a1020,#04060c);
+  clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));
 }
-.char-visual::before{
-  content:'';position:absolute;inset:-20%;
-  background:radial-gradient(circle at 50% 42%,var(--c1),transparent 60%);
-  opacity:.42;filter:blur(30px);
-  transition:opacity .5s,transform .8s;
+.dl-box h2{
+  font-size:clamp(1.5rem,3.6vw,2.3rem);
+  font-weight:800;line-height:1.35;
+  letter-spacing:.03em;margin-bottom:12px;
 }
-.char-card:hover .char-visual::before{opacity:.68;transform:scale(1.12)}
-.char-visual::after{
-  content:'';position:absolute;
-  left:50%;top:44%;transform:translate(-50%,-50%);
-  width:180px;height:180px;border-radius:50%;
-  border:1px solid rgba(255,255,255,.13);
-  box-shadow:inset 0 0 60px -12px var(--c1);
-  animation:ringPulse 4s ease-in-out infinite;
+.dl-box h2 em{font-style:normal;color:var(--green)}
+.dl-box > p{
+  color:var(--muted);font-size:.9rem;
+  margin-bottom:34px;
 }
-@keyframes ringPulse{
-  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.8}
-  50%{transform:translate(-50%,-50%) scale(1.09);opacity:.45}
+.dl-box .download-area{
+  justify-content:center;
 }
-.char-glyph{
-  position:absolute;left:50%;top:44%;
-  transform:translate(-50%,-50%);
-  font-size:5.6rem;font-weight:900;
-  color:transparent;
-  -webkit-text-stroke:1.5px rgba(255,255,255,.32);
-  letter-spacing:.05em;
-  z-index:2;
-  transition:transform .6s cubic-bezier(.2,.8,.2,1),-webkit-text-stroke-color .5s;
-  user-select:none;
+.dl-notice{
+  margin-top:28px;
+  font-family:var(--mono);
+  font-size:.7rem;letter-spacing:.1em;
+  color:var(--muted);
+  line-height:1.9;
 }
-.char-card:hover .char-glyph{
-  transform:translate(-50%,-50%) scale(1.1);
-  -webkit-text-stroke-color:var(--c1);
-}
-.char-body{padding:26px 26px 30px}
-.char-role{
-  font-size:.68rem;letter-spacing:.28em;
-  color:var(--c1);font-weight:700;margin-bottom:10px;
-}
-.char-name{
-  font-size:1.5rem;font-weight:800;letter-spacing:.1em;margin-bottom:6px;
-}
-.char-title{
-  font-size:.82rem;color:var(--muted);margin-bottom:22px;letter-spacing:.05em;
-}
-.char-bars{display:flex;flex-direction:column;gap:11px}
-.bar-row{display:flex;align-items:center;gap:12px}
-.bar-row span{
-  font-size:.68rem;letter-spacing:.18em;color:var(--muted);
-  width:42px;flex-shrink:0;
-}
-.bar{
-  flex:1;height:3px;border-radius:3px;
-  background:rgba(255,255,255,.08);
-  overflow:hidden;
-}
-.bar i{
-  display:block;height:100%;width:0;
-  border-radius:3px;
-  background:linear-gradient(90deg,var(--c1),color-mix(in srgb,var(--c1) 40%,#fff));
-  transition:width 1.2s cubic-bezier(.2,.8,.2,1);
-  box-shadow:0 0 12px var(--c1);
-}
-.char-card.in .bar i{width:var(--w)}
+.dl-notice b{color:var(--green)}
 
-/* ===================== 影音 ===================== */
-.media-layout{
-  display:grid;
-  grid-template-columns:1.65fr 1fr;
-  gap:22px;
-}
-.video-frame{
-  position:relative;
-  aspect-ratio:16/10;
-  border-radius:var(--radius);
-  overflow:hidden;
-  border:1px solid var(--line);
-  background:
-    radial-gradient(circle at 30% 30%,rgba(34,211,238,.35),transparent 55%),
-    radial-gradient(circle at 75% 70%,rgba(139,92,246,.4),transparent 55%),
-    linear-gradient(160deg,#0a1224,#05070e);
-  cursor:pointer;
-  display:grid;place-items:center;
-  transition:border-color .4s;
-}
-.video-frame:hover{border-color:rgba(34,211,238,.45)}
-.video-frame .scan{
-  position:absolute;inset:0;
-  background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 4px);
-  opacity:.5;pointer-events:none;
-}
-.play{
-  position:relative;
-  width:86px;height:86px;border-radius:50%;
-  display:grid;place-items:center;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.28);
-  backdrop-filter:blur(10px);
-  transition:transform .4s cubic-bezier(.2,.8,.2,1),background .4s,border-color .4s;
-}
-.play::before{
-  content:'';position:absolute;inset:-12px;border-radius:50%;
-  border:1px solid rgba(34,211,238,.35);
-  animation:pulseRing 2.6s ease-out infinite;
-}
-@keyframes pulseRing{
-  0%{transform:scale(.85);opacity:.9}
-  100%{transform:scale(1.4);opacity:0}
-}
-.play svg{width:26px;height:26px;fill:#fff;margin-left:5px}
-.video-frame:hover .play{
-  transform:scale(1.1);
-  background:rgba(34,211,238,.22);
-  border-color:var(--cyan);
-}
-.video-caption{
-  position:absolute;left:28px;bottom:24px;
-  font-size:.78rem;letter-spacing:.2em;color:#c9d6e8;
-}
-.video-caption b{display:block;font-size:1.05rem;letter-spacing:.06em;margin-bottom:4px}
-
-.shots{
+/* ============================================================
+   反馈区
+============================================================ */
+.feedback-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:22px;
+  gap:16px;
 }
-.shot{
-  border-radius:var(--radius);
+.fb-card{
   border:1px solid var(--line);
-  overflow:hidden;
-  position:relative;
-  aspect-ratio:1/1;
-  background:linear-gradient(150deg,#0b1120,#06080f);
-  cursor:pointer;
-  transition:transform .45s cubic-bezier(.2,.8,.2,1),border-color .45s;
+  background:var(--panel);
+  padding:30px 28px 32px;
+  display:flex;flex-direction:column;
+  transition:border-color .4s,transform .4s;
 }
-.shot:nth-child(1){background:linear-gradient(150deg,#0d1a2e,#06080f)}
-.shot:nth-child(2){background:linear-gradient(150deg,#1a1030,#06080f)}
-.shot:nth-child(3){background:linear-gradient(150deg,#2a1028,#06080f)}
-.shot:nth-child(4){background:linear-gradient(150deg,#0a2028,#06080f)}
-.shot::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(circle at 50% 120%,rgba(34,211,238,.35),transparent 60%);
-  opacity:0;transition:opacity .45s;
+.fb-card:hover{
+  border-color:var(--line-2);
+  transform:translateY(-4px);
 }
-.shot:hover{transform:translateY(-6px) scale(1.02);border-color:rgba(34,211,238,.4)}
-.shot:hover::before{opacity:1}
-.shot span{
-  position:absolute;left:16px;bottom:14px;
-  font-size:.7rem;letter-spacing:.2em;color:var(--muted);z-index:2;
+.fb-card .lbl{
+  font-family:var(--mono);
+  font-size:.64rem;letter-spacing:.22em;
+  color:var(--green);
+  margin-bottom:14px;
 }
-.shot b{
-  position:absolute;left:16px;top:16px;
-  font-size:1.8rem;font-weight:900;
-  color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.14);
-  z-index:2;
+.fb-card h4{
+  font-size:1.05rem;font-weight:800;
+  letter-spacing:.04em;margin-bottom:8px;
 }
-
-/* ===================== 资讯 ===================== */
-.news-list{display:flex;flex-direction:column;gap:0}
-.news-item{
-  display:grid;
-  grid-template-columns:130px 1fr auto;
-  gap:32px;
-  align-items:center;
-  padding:30px 8px;
-  border-bottom:1px solid var(--line);
-  transition:padding .4s cubic-bezier(.2,.8,.2,1),background .4s;
-  position:relative;
+.fb-card p{
+  font-size:.83rem;color:var(--muted);
+  line-height:1.8;margin-bottom:22px;
+  flex:1;
 }
-.news-item:first-child{border-top:1px solid var(--line)}
-.news-item::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
-  background:linear-gradient(180deg,var(--cyan),var(--violet));
-  transform:scaleY(0);transform-origin:top;
-  transition:transform .4s;
+.fb-card .fb-link{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);
+  font-size:.74rem;letter-spacing:.1em;
+  color:var(--green);
+  padding:10px 16px;
+  border:1px solid var(--line-2);
+  transition:background .3s,border-color .3s;
+  align-self:flex-start;
 }
-.news-item:hover{padding-left:24px;background:rgba(255,255,255,.02)}
-.news-item:hover::before{transform:scaleY(1)}
-.news-date{
-  font-size:.72rem;letter-spacing:.14em;color:var(--muted);
-  font-variant-numeric:tabular-nums;
+.fb-card .fb-link:hover{
+  background:rgba(163,224,72,.1);
+  border-color:var(--green);
 }
-.news-main h4{
-  font-size:1.06rem;font-weight:700;letter-spacing:.03em;
-  margin-bottom:8px;transition:color .3s;
-}
-.news-item:hover .news-main h4{color:var(--cyan)}
-.news-main p{font-size:.86rem;color:var(--muted);line-height:1.7}
-.news-tag{
-  font-size:.66rem;letter-spacing:.2em;
-  padding:6px 14px;border-radius:999px;
-  border:1px solid rgba(34,211,238,.3);
-  color:var(--cyan);
-  background:rgba(34,211,238,.07);
-  white-space:nowrap;
-}
-.news-tag.alt{
-  border-color:rgba(244,63,142,.3);color:var(--magenta);
-  background:rgba(244,63,142,.07);
+.fb-card .fb-link svg{
+  width:12px;height:12px;
 }
 
-/* ===================== CTA ===================== */
-.cta-box{
-  position:relative;
-  border-radius:30px;
-  border:1px solid var(--line);
-  overflow:hidden;
-  padding:80px 40px;
-  text-align:center;
-  background:linear-gradient(160deg,rgba(34,211,238,.09),rgba(139,92,246,.09));
-}
-.cta-box::before{
-  content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(circle at 20% 20%,rgba(34,211,238,.3),transparent 55%),
-    radial-gradient(circle at 80% 80%,rgba(244,63,142,.24),transparent 55%);
-  filter:blur(40px);
-}
-.cta-box > *{position:relative;z-index:1}
-.cta-box h2{
-  font-size:clamp(1.8rem,4.4vw,2.9rem);
-  font-weight:800;letter-spacing:.05em;line-height:1.3;
-  margin-bottom:18px;
-}
-.cta-box p{color:var(--muted);margin-bottom:42px;font-size:.95rem}
-
-.signup{
-  display:flex;gap:12px;max-width:520px;margin:0 auto;
-  flex-wrap:wrap;
-}
-.signup input{
-  flex:1;min-width:220px;
-  padding:1rem 1.4rem;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.16);
-  background:rgba(0,0,0,.35);
-  color:var(--text);
-  font-size:.92rem;
-  font-family:inherit;
-  outline:none;
-  transition:border-color .3s,box-shadow .3s;
-}
-.signup input::placeholder{color:#5c687d}
-.signup input:focus{
-  border-color:var(--cyan);
-  box-shadow:0 0 0 4px rgba(34,211,238,.13);
-}
-.form-msg{
-  margin-top:22px;
-  font-size:.85rem;letter-spacing:.08em;
-  color:var(--cyan);
-  min-height:1.4em;
-  opacity:0;transition:opacity .4s;
-}
-.form-msg.show{opacity:1}
-
-/* ===================== 页脚 ===================== */
+/* ============================================================
+   页脚
+============================================================ */
 footer{
   border-top:1px solid var(--line);
-  padding:70px 24px 36px;
-  background:rgba(0,0,0,.35);
+  background:rgba(0,0,0,.4);
+  padding:58px 26px 32px;
+  position:relative;z-index:2;
 }
 .foot-top{
-  max-width:1200px;margin:0 auto;
+  max-width:1320px;margin:0 auto;
   display:grid;
-  grid-template-columns:1.6fr repeat(3,1fr);
-  gap:48px;
-  padding-bottom:48px;
+  grid-template-columns:1.7fr repeat(3,1fr);
+  gap:44px;
+  padding-bottom:40px;
   border-bottom:1px solid var(--line);
 }
 .foot-brand p{
-  color:var(--muted);font-size:.85rem;line-height:1.9;
-  margin-top:18px;max-width:300px;
+  color:var(--muted);font-size:.84rem;line-height:1.9;
+  margin-top:18px;max-width:320px;
 }
 .foot-col h5{
-  font-size:.74rem;letter-spacing:.24em;color:var(--text);
-  margin-bottom:22px;font-weight:700;
+  font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.22em;
+  color:var(--green);margin-bottom:20px;
 }
 .foot-col a{
-  display:block;font-size:.86rem;color:var(--muted);
-  margin-bottom:14px;transition:color .25s,transform .25s;
+  display:block;
+  font-size:.83rem;color:var(--muted);
+  margin-bottom:12px;
+  transition:color .25s,transform .25s;
 }
-.foot-col a:hover{color:var(--cyan);transform:translateX(4px)}
+.foot-col a:hover{color:var(--green);transform:translateX(4px)}
 .foot-bottom{
-  max-width:1200px;margin:0 auto;
-  padding-top:30px;
+  max-width:1320px;margin:0 auto;
+  padding-top:24px;
   display:flex;justify-content:space-between;align-items:center;
-  gap:20px;flex-wrap:wrap;
-  font-size:.76rem;color:#5c687d;letter-spacing:.06em;
+  gap:18px;flex-wrap:wrap;
+  font-family:var(--mono);
+  font-size:.68rem;color:#4d5844;letter-spacing:.06em;
 }
-.socials{display:flex;gap:12px}
-.socials a{
-  width:38px;height:38px;border-radius:11px;
+.foot-bottom .socials{display:flex;gap:9px}
+.foot-bottom .socials a{
+  width:36px;height:36px;
   display:grid;place-items:center;
   border:1px solid var(--line);
+  font-family:var(--mono);
+  font-size:.6rem;font-weight:700;
   color:var(--muted);
-  font-size:.7rem;font-weight:700;
   transition:.3s;
 }
-.socials a:hover{
-  border-color:var(--cyan);color:var(--cyan);
-  background:rgba(34,211,238,.08);
+.foot-bottom .socials a:hover{
+  border-color:var(--green);color:var(--green);
+  background:rgba(163,224,72,.08);
   transform:translateY(-3px);
 }
 
-/* ===================== 响应式 ===================== */
-@media (max-width:1024px){
-  .media-layout{grid-template-columns:1fr}
-  .foot-top{grid-template-columns:1fr 1fr;gap:40px}
+/* ============================================================
+   下载弹窗
+============================================================ */
+.modal{
+  position:fixed;inset:0;z-index:200;
+  display:none;
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.modal.open{display:flex}
+.modal-backdrop{
+  position:absolute;inset:0;
+  background:rgba(4,6,3,.82);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-panel{
+  position:relative;
+  width:100%;max-width:480px;
+  background:var(--panel);
+  border:1px solid var(--line-2);
+  clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.95),0 0 0 1px rgba(0,0,0,.6);
+  animation:modalIn .35s cubic-bezier(.2,.8,.2,1);
+  overflow:hidden;
+}
+@keyframes modalIn{
+  from{opacity:0;transform:translateY(20px) scale(.96)}
+  to{opacity:1;transform:none}
+}
+.modal-head{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 20px;
+  border-bottom:1px solid var(--line);
+  background:rgba(163,224,72,.05);
+}
+.modal-head h3{
+  font-family:var(--mono);
+  font-size:.85rem;font-weight:800;
+  letter-spacing:.14em;
+  color:var(--green);
+}
+.modal-head .close{
+  margin-left:auto;
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  color:var(--muted);
+  font-size:1.1rem;
+  transition:color .25s,background .25s;
+}
+.modal-head .close:hover{color:var(--green);background:rgba(163,224,72,.1)}
+
+.modal-body{padding:24px 22px 26px}
+
+.platform-current{
+  border:1px solid var(--line);
+  background:rgba(10,13,7,.6);
+  padding:22px 20px;
+  margin-bottom:20px;
+}
+.platform-current .pc-label{
+  font-family:var(--mono);
+  font-size:.62rem;letter-spacing:.22em;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.platform-current h4{
+  font-size:1.05rem;font-weight:800;
+  letter-spacing:.04em;margin-bottom:6px;
+  color:var(--text);
+}
+.platform-current .pc-desc{
+  font-size:.8rem;color:var(--muted);
+  line-height:1.75;margin-bottom:18px;
+}
+.platform-current .pc-file{
+  display:block;
+  font-family:var(--mono);
+  font-size:.7rem;
+  letter-spacing:.02em;
+  color:var(--green);
+  background:rgba(163,224,72,.05);
+  border:1px dashed rgba(163,224,72,.22);
+  padding:9px 12px;
+  margin-bottom:18px;
+  line-height:1.65;
+  word-break:break-all;
+}
+.pc-btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--mono);
+  font-size:.78rem;font-weight:800;letter-spacing:.12em;
+  padding:.85rem 1.8rem;
+  background:var(--green);
+  color:#0a0c08;
+  clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
+  transition:background .25s,transform .25s;
+}
+.pc-btn:hover{background:#b8f060;transform:translateY(-2px)}
+.pc-btn.is-disabled{
+  background:rgba(255,255,255,.07);
+  color:var(--muted);
+  border:1px solid rgba(255,255,255,.1);
+  cursor:not-allowed;
+}
+.pc-btn.is-disabled:hover{
+  background:rgba(255,255,255,.07);
+  transform:none;
+}
+
+.platform-switch{
+  border-top:1px dashed rgba(163,224,72,.15);
+  padding-top:18px;
+}
+.switch-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;
+  font-family:var(--mono);
+  font-size:.76rem;letter-spacing:.1em;
+  color:var(--green);
+  padding:8px 0;
+  transition:color .25s;
+}
+.switch-toggle:hover{color:#b8f060}
+.switch-toggle .arrow{
+  transition:transform .3s;
+}
+.switch-toggle.open .arrow{transform:rotate(180deg)}
+
+.platform-list{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .4s cubic-bezier(.2,.8,.2,1);
+}
+.platform-list.open{max-height:400px}
+.platform-list-inner{
+  padding-top:14px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.platform-opt{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;
+  padding:13px 16px;
+  border:1px solid var(--line);
+  background:rgba(10,13,7,.5);
+  transition:border-color .3s,background .3s;
+}
+.platform-opt:hover{
+  border-color:var(--line-2);
+  background:rgba(163,224,72,.04);
+}
+.platform-opt .po-info{
+  display:flex;flex-direction:column;gap:2px;
+}
+.platform-opt .po-name{
+  font-family:var(--mono);
+  font-size:.82rem;font-weight:700;
+  letter-spacing:.06em;
+  color:var(--text);
+}
+.platform-opt .po-status{
+  font-family:var(--mono);
+  font-size:.62rem;letter-spacing:.14em;
+  color:var(--muted);
+}
+.platform-opt .po-status.avail{color:var(--green)}
+.platform-opt .po-btn{
+  font-family:var(--mono);
+  font-size:.7rem;font-weight:700;letter-spacing:.1em;
+  padding:8px 16px;
+  background:var(--green);
+  color:#0a0c08;
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+  transition:background .25s;
+}
+.platform-opt .po-btn:hover{background:#b8f060}
+.platform-opt .po-btn.is-disabled{
+  background:rgba(255,255,255,.06);
+  color:var(--muted);
+  border:1px solid rgba(255,255,255,.08);
+  cursor:not-allowed;
+}
+.platform-opt .po-btn.is-disabled:hover{background:rgba(255,255,255,.06)}
+
+/* ============================================================
+   响应式
+============================================================ */
+@media (max-width:1080px){
+  .hero-inner{grid-template-columns:1fr;gap:44px}
+  .phone{max-width:460px;margin:0 auto}
+  .loop-grid{grid-template-columns:repeat(2,1fr)}
+  .player-block{grid-template-columns:1fr;gap:34px}
+  .studio-grid{grid-template-columns:1fr;gap:14px}
+  .foot-top{grid-template-columns:1fr 1fr;gap:36px}
 }
 @media (max-width:860px){
   .nav-links{
     position:fixed;top:0;right:0;
-    height:100vh;width:min(300px,78vw);
-    flex-direction:column;
-    gap:8px;
-    padding:110px 34px;
-    background:rgba(6,8,14,.97);
-    backdrop-filter:blur(22px);
+    height:100vh;width:min(290px,80vw);
+    flex-direction:column;gap:0;
+    padding:104px 32px;
+    background:rgba(8,10,6,.98);
+    backdrop-filter:blur(20px);
     border-left:1px solid var(--line);
     transform:translateX(100%);
     transition:transform .45s cubic-bezier(.2,.8,.2,1);
@@ -775,27 +1145,27 @@ footer{
   }
   .nav-links.open{transform:none}
   .nav-links a{
-    font-size:1.05rem;padding:14px 0;color:var(--text);
+    font-size:.95rem;padding:15px 0;
+    border-bottom:1px solid var(--line);
+    color:var(--text);
   }
   .burger{display:flex}
   .nav .btn-sm{display:none}
-  section{padding:88px 20px}
-  .hero{padding-top:120px}
-  .news-item{
-    grid-template-columns:1fr;
-    gap:14px;
-  }
-  .news-date{order:-1}
-  .news-tag{justify-self:start}
-  .foot-top{grid-template-columns:1fr;gap:36px}
-  .cta-box{padding:60px 24px}
+  section{padding:78px 20px}
+  .hero{padding:108px 20px 68px}
+  .statbar-inner{grid-template-columns:1fr 1fr;gap:24px 12px}
+  .stat-cell:nth-child(3)::before{display:none}
+  .stat-cell:nth-child(odd)::before{display:none}
+  .foot-top{grid-template-columns:1fr;gap:32px}
+  .feedback-grid{grid-template-columns:1fr}
+  .dl-box{padding:44px 22px}
 }
 @media (max-width:560px){
-  .stats{gap:22px}
-  .stat + .stat::before{display:none}
-  .shots{grid-template-columns:1fr}
-  .hero-actions{flex-direction:column;align-items:stretch}
-  .hero-actions .btn{width:100%}
+  .loop-grid{grid-template-columns:1fr}
+  .download-area{flex-direction:column;align-items:stretch;gap:14px}
+  .dl-main{width:100%;justify-content:center}
+  .dl-alt{text-align:center}
+  .dl-box .download-area{align-items:center}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -810,411 +1180,958 @@ footer{
 </head>
 <body>
 
-<!-- 星空背景 -->
-<canvas id="stars"></canvas>
+<canvas id="dust"></canvas>
+<div class="noise"></div>
+<div class="crt"></div>
+<div class="vignette"></div>
 <div class="progress" id="progress"></div>
 
-<!-- ===================== 导航 ===================== -->
+<!-- ==================== 导航 ==================== -->
 <header class="nav" id="nav">
   <div class="nav-inner">
-    <a href="#home" class="logo">
-      <span class="logo-mark"></span>
-      <span class="logo-text">管控区<em>Control-Area</em></span>
+    <a href="#top" class="brand">
+      <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <g fill="currentColor">
+          <circle cx="50" cy="50" r="8.5"/>
+          <path d="M50 33 L50 4 A46 46 0 0 1 89.8 27 L64.7 41.5 A17 17 0 0 0 50 33 Z"/>
+          <path d="M50 33 L50 4 A46 46 0 0 1 89.8 27 L64.7 41.5 A17 17 0 0 0 50 33 Z" transform="rotate(120 50 50)"/>
+          <path d="M50 33 L50 4 A46 46 0 0 1 89.8 27 L64.7 41.5 A17 17 0 0 0 50 33 Z" transform="rotate(240 50 50)"/>
+        </g>
+      </svg>
+      <span class="brand-txt">
+        <b>管控区</b>
+        <span>CONTROL AREA</span>
+      </span>
     </a>
+
     <nav class="nav-links" id="navLinks">
-      <a href="#features">游戏特色</a>
-      <a href="#news">最新资讯</a>
+      <a href="#loop">核心循环</a>
+      <a href="#systems">玩法系统</a>
+      <a href="#players">目标玩家</a>
+      <a href="#studio">开发信息</a>
+      <a href="#download">下载</a>
+      <a href="#feedback">反馈</a>
     </nav>
-    <!-- 直接下载：data-download 由脚本统一接管 -->
-    <a href="https://github.com/yumou114514/control-area-offical/releases/latest/download/ControlArea-arm64-v8a.apk"
-       class="btn btn-primary btn-sm" data-download>下载游戏</a>
-    <button class="burger" id="burger" aria-label="打开菜单">
+
+    <a href="#download" class="btn btn-green btn-sm" id="navDlBtn">立即下载</a>
+
+    <button class="burger" id="burger" aria-label="菜单">
       <span></span><span></span><span></span>
     </button>
   </div>
 </header>
 
-<main>
-  <!-- ===================== HERO ===================== -->
-  <section class="hero" id="home">
-    <div class="hero-bg" id="heroBg">
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-      <div class="orb orb-3"></div>
-      <div class="grid-lines"></div>
-    </div>
-    <div class="hero-vignette"></div>
+<main id="top">
 
-    <div class="hero-content">
-      <div class="tag"><span class="dot"></span>2026 · 开放世界搜打撤</div>
-
-      <h1 class="hero-title">管控区</h1>
-      <div class="hero-title-en">CONTROL-AREA</div>
-
-      <p class="hero-sub">当人类命运悬于一线，谁来踏入管控区</p>
-
-      <div class="hero-actions">
-        <a href="https://github.com/yumou114514/control-area-offical/releases/latest/download/ControlArea-arm64-v8a.apk"
-           class="btn btn-primary" data-download>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span data-dl-label>下载游戏</span>
-        </a>
-        <div class="alt-download">备用下载：<a href="https://codeberg.org/yumou/control-area-offical/releases" target="_blank" rel="noopener">Codeberg</a></div>
-      </div>
-
-    </div>
-
-    <div class="scroll-hint">SCROLL<i></i></div>
-  </section>
-
-  <!-- ===================== 跑马灯 ===================== -->
-  <div class="marquee">
-    <div class="marquee-track">
-      <span>
-        Android <i>◆</i> Windows <i>◆</i> Linux <i>◆</i>2026 全球同步上线<i>◆</i>跨平台联机<i>◆</i>Godot 4 打造<i>◆</i>现已正式上线<i>◆</i>
-      </span>
-      <span>
-        Android <i>◆</i> Windows <i>◆</i> Linux <i>◆</i>2026 全球同步上线<i>◆</i>跨平台联机<i>◆</i>Godot 4 打造<i>◆</i>现已正式上线<i>◆</i>
-      </span>
-    </div>
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="hero-fx">
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+    <div class="glow g3"></div>
+    <div class="scanlines-bg"></div>
+    <div class="hero-sweep"></div>
   </div>
 
-  <!-- ===================== 游戏特色 ===================== -->
-  <section id="features">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="sec-kicker">// 核心特色</span>
-        <h2 class="sec-title">交战搜索<br>搞定<em>就撤！</em></h2>
-        <p class="sec-desc">横跨地球大陆，穿越闹市区，带上物资回家。在「管控区」中，每一次选择都会改写世界的走向。</p>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-status">
+        <span class="led"></span>
+        开发中 · 尚未公测 · 项目立项于 2026-09-01
       </div>
 
-      <div class="features-grid">
-        <article class="card reveal">
-          <span class="card-num">01</span>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.8 2.5 15.2 0 18M12 3c-2.5 2.8-2.5 15.2 0 18"/></svg>
-          </div>
-          <h3>无缝开放世界</h3>
-          <p>风格迥异的大陆无缝衔接，全程零加载自由穿行。</p>
-        </article>
+      <h1 class="hero-title">
+        <span>CONTROL</span>
+        <span class="hl">AREA</span>
+      </h1>
+      <div class="hero-cn">管 控 区</div>
+      <div class="hero-cn-sub">// 末世 · 开放世界 · 生存 · 搜打撤 · 2D</div>
 
-        <article class="card reveal">
-          <span class="card-num">02</span>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>
-          </div>
-          <h3>元素共鸣战斗</h3>
-          <p>多种元素自由组合，触发多种共鸣连锁。实时战斗，打出属于你的连携奥义。</p>
-        </article>
+      <p class="hero-desc">
+        一场灾难之后，城市被划入<b>永久管控区</b>。
+        你要在辐射、怪物与其他幸存者之间活下去——
+        <b>搜集</b>物资、<b>战斗</b>突围、<b>撤离</b>求生。
+        你可以单人潜行，也可以<b>联机组队</b>，
+        体验带着末世压迫感的开放世界生存。
+      </p>
 
-        <article class="card reveal">
-          <span class="card-num">03</span>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 22V12M3 7l9 5 9-5"/></svg>
-          </div>
-          <h3>深度养成体系</h3>
-          <p>武器，护甲，体质三大养成线，拒绝数值堆砌，每一种流派都有独特的战术价值。</p>
-        </article>
+      <div class="hero-tags">
+        <span>Android</span>
+        <span>Windows</span>
+        <span>Linux</span>
+        <span>免费 + 内购</span>
+        <span>Godot 4</span>
+        <span>联机</span>
+      </div>
 
-        <article class="card reveal">
-          <span class="card-num">04</span>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3>跨平台联机</h3>
-          <p>PC / 移动端数据互通，组队挑战，随时与好友并肩作战。</p>
-        </article>
-
-        <article class="card reveal">
-          <span class="card-num">05</span>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg>
-          </div>
-          <h3>动态昼夜天气</h3>
-          <p>真实的昼夜循环与天气系统，体验真实的环境变化。</p>
-        </article>
-
-        <article class="card reveal">
-          <span class="card-num">06</span>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
-          </div>
-          <h3>电影级叙事</h3>
-          <p>动人主线剧情，音乐由国际顶尖乐团录制。</p>
-        </article>
+      <div class="download-area">
+        <a href="javascript:void(0)" class="dl-main" id="heroDlBtn" data-download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12M7 10l5 5 5-5M4 19h16"/>
+          </svg>
+          <span id="heroDlText">立即下载</span>
+        </a>
+        <a href="https://codeberg.org/yumou/control-area-offical/releases"
+           class="dl-alt" id="heroAltLink" target="_blank" rel="noopener">
+          备用下载（Codeberg）
+        </a>
       </div>
     </div>
-  </section>
 
-  <!-- ===================== 资讯 ===================== -->
-  <section id="news">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="sec-kicker">// 最新资讯</span>
-        <h2 class="sec-title">开发日志与<em>活动公告</em></h2>
+    <!-- 右侧：游戏内手机界面 -->
+    <div class="phone">
+      <div class="phone-bar">
+        <span>08:47</span>
+        <span class="sig"><i></i><i></i><i></i><i></i></span>
+        <span class="bat">73%</span>
       </div>
-
-      <div class="news-list">
-        <a href="#" class="news-item reveal">
-          <div class="news-date">2026 / 09 / 15</div>
-          <div class="news-main">
-            <h4>「管控区」内测正式开启，新增两片浮空大陆</h4>
-            <p>本次测试将开放核心区域。</p>
-          </div>
-        </a>
-
-        <a href="#" class="news-item reveal">
-          <div class="news-date">2026 / 10 / 01</div>
-          <div class="news-main">
-            <h4>「管控区」公测正式开启</h4>
-            <p>公测将开放下载。</p>
-          </div>
-        </a>
-        
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== CTA ===================== -->
-  <section id="cta">
-    <div class="wrap">
-      <div class="cta-box reveal">
-        <h2>成为第一批踏入管控区的人</h2>
-        <p>游戏已正式发布，立即下载开始你的搜打撤之旅</p>
-        <a href="https://github.com/yumou114514/control-area-offical/releases/latest/download/ControlArea-arm64-v8a.apk"
-           class="btn btn-primary" data-download>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span data-dl-label>立即下载</span>
-        </a>
-        <div class="alt-download">备用下载：<a href="https://codeberg.org/yumou/control-area-offical/releases" target="_blank" rel="noopener">Codeberg</a></div>
-
-        <div class="form-msg" id="formMsg"></div>
+      <div class="phone-body">
+        <div class="phone-map">
+          <span class="zone-tag">ZONE-02 · 第七水厂</span>
+          <span class="dot"></span>
+        </div>
+        <div class="phone-row">
+          <span class="k">当前区域</span>
+          <span class="v">第七水厂 · 北翼</span>
+        </div>
+        <div class="phone-row">
+          <span class="k">辐射剂量率</span>
+          <span class="v warn">2.41 μSv/h</span>
+        </div>
+        <div class="phone-row">
+          <span class="k">当前任务</span>
+          <span class="v">搜集滤芯 ×3</span>
+        </div>
+        <div class="phone-row">
+          <span class="k">队友在线</span>
+          <span class="v">2 / 4</span>
+        </div>
+        <div class="phone-row">
+          <span class="k">撤离窗口</span>
+          <span class="v bad">04:12</span>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
+<div class="hazard"></div>
+
+<!-- ==================== 数据条 ==================== -->
+<div class="statbar">
+  <div class="statbar-inner">
+    <div class="stat-cell">
+      <b>开放世界</b>
+      <span>探索 · 生存</span>
+    </div>
+    <div class="stat-cell">
+      <b>搜打撤</b>
+      <span>核心玩法</span>
+    </div>
+    <div class="stat-cell">
+      <b>PVE / PVP</b>
+      <span>战斗模式</span>
+    </div>
+    <div class="stat-cell">
+      <b>Godot 4</b>
+      <span>开发引擎</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 核心循环 ==================== -->
+<section id="loop">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">CORE LOOP</span>
+      <h2 class="sec-title">动作 · 成长 · 反馈 · 奖励<br><em>一套完整的末世生存循环</em></h2>
+      <p class="sec-desc">
+        每一次行动都推动你向前一步：探索世界、收集物资、对抗威胁，
+        然后变强、进入新区域、结识新人脉。
+      </p>
+    </div>
+
+    <div class="loop-grid">
+      <article class="loop-item reveal">
+        <div class="loop-num">STEP — 01</div>
+        <h3>动作</h3>
+        <p>探索废墟、打怪、收集物资、制造装备、与 NPC 交易、与其他玩家交流。所有行为都真实影响生存状态。</p>
+      </article>
+      <article class="loop-item reveal">
+        <div class="loop-num">STEP — 02</div>
+        <h3>成长</h3>
+        <p>角色变强、解锁新区域、建立新的人脉网络。你的选择决定你在这个末世里的位置。</p>
+      </article>
+      <article class="loop-item reveal">
+        <div class="loop-num">STEP — 03</div>
+        <h3>反馈</h3>
+        <p>经济系统与数值系统实时响应你的行为。物价会波动，市场会变化，你的一举一动都有回响。</p>
+      </article>
+      <article class="loop-item reveal">
+        <div class="loop-num">STEP — 04</div>
+        <h3>奖励</h3>
+        <p>金条、新币、新武器。带得出去的才算数——撤离成功，一切归你；失败，全部归零。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div class="hazard thin"></div>
+
+<!-- ==================== 玩法系统 ==================== -->
+<section id="systems">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="kicker">GAMEPLAY SYSTEMS</span>
+      <h2 class="sec-title">不止是搜打撤<em>一个完整的末世世界</em></h2>
+      <p class="sec-desc">
+        从探索到战斗，从经济到社交，从天气到时间——
+        每一个系统都在同一个世界里互相作用。
+      </p>
+    </div>
+
+    <div class="sys-grid">
+      <article class="sys reveal">
+        <div class="sys-top">
+          <div class="sys-ico">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="M16.5 16.5 21 21"/>
+            </svg>
+          </div>
+          <h4>探索</h4>
+        </div>
+        <p>开放世界地图等待你一步步揭开。废墟、工厂、地下管网，每个角落都可能藏着物资或危险。</p>
+      </article>
+
+      <article class="sys reveal">
+        <div class="sys-top">
+          <div class="sys-ico">
+            <svg viewBox="0 0 24 24">
+              <path d="M14.5 4.5 19.5 9.5 9 20H4v-5z"/>
+              <path d="M12 7l5 5"/>
+            </svg>
+          </div>
+          <h4>战斗 · PVE / PVP</h4>
+        </div>
+        <p>对抗环境中的怪物与敌对势力，也要提防其他玩家。PVE 与 PVP 共存，战斗结果真实影响你的生存。</p>
+      </article>
+
+      <article class="sys reveal">
+        <div class="sys-top">
+          <div class="sys-ico">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 20h18"/>
+              <path d="M6 20V10M12 20V4M18 20v-7"/>
+            </svg>
+          </div>
+          <h4>发展与成长</h4>
+        </div>
+        <p>角色能力、装备水平、据点建设。每一次投入都会让你在末世里走得更远。</p>
+      </article>
+
+      <article class="sys reveal">
+        <div class="sys-top">
+          <div class="sys-ico">
+            <svg viewBox="0 0 24 24">
+              <circle cx="9" cy="8" r="3.5"/>
+              <circle cx="17" cy="9" r="3"/>
+              <path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/>
+              <path d="M15 20c0-2.5 1.5-4.5 4-4.5"/>
+            </svg>
+          </div>
+          <h4>合作与战争</h4>
+        </div>
+        <p>与其他玩家组队生存，或为了资源反目。信任与背叛，都是这个世界的一部分。</p>
+      </article>
+
+      <article class="sys reveal">
+        <div class="sys-top">
+          <div class="sys-ico">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 6h16l-1.5 13H5.5z"/>
+              <path d="M8 6V4h8v2"/>
+              <path d="M9 11h6M9 15h4"/>
+            </svg>
+          </div>
+          <h4>市场与黑市</h4>
+        </div>
+        <p>官方市场交易稳定物资，黑市流通稀有品与违禁品。价格由供需驱动，风险与收益并存。</p>
+      </article>
+
+      <article class="sys reveal">
+        <div class="sys-top">
+          <div class="sys-ico">
+            <svg viewBox="0 0 24 24">
+              <path d="M17 18a4 4 0 0 0 0-8 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 6 18z"/>
+              <path d="M9 21l1-2M13 21l1-2M17 21l1-2"/>
+            </svg>
+          </div>
+          <h4>天气与时间</h4>
+        </div>
+        <p>昼夜循环、天气变化会真实影响探索与战斗。夜间的威胁与白天的资源分布完全不同。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 目标玩家 ==================== -->
+<section id="players">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">WHO IS IT FOR</span>
+      <h2 class="sec-title">为这样的你而做</h2>
+    </div>
+
+    <div class="player-block">
+      <blockquote class="player-quote reveal">
+        如果你既想要<b>联机搜打撤</b>的紧张博弈，<br>
+        又想要<b>末世生存</b>那种被世界压迫的沉浸感——<br>
+        《管控区》就是为你准备的。
+      </blockquote>
+
+      <div class="player-list">
+        <div class="player-list-item reveal">
+          <span class="n">01</span>
+          <div>
+            <h5>喜欢搜打撤的玩家</h5>
+            <p>搜集物资、对抗威胁、成功撤离。失败会失去身上的一切。</p>
+          </div>
+        </div>
+        <div class="player-list-item reveal">
+          <span class="n">02</span>
+          <div>
+            <h5>喜欢末世生存的玩家</h5>
+            <p>辐射、饥荒、疾病、天气——世界本身就在与你为敌。</p>
+          </div>
+        </div>
+        <div class="player-list-item reveal">
+          <span class="n">03</span>
+          <div>
+            <h5>喜欢联机的玩家</h5>
+            <p>和好友组队探索，或与陌生人合作、对抗、交易。</p>
+          </div>
+        </div>
+        <div class="player-list-item reveal">
+          <span class="n">04</span>
+          <div>
+            <h5>喜欢慢节奏成长的玩家</h5>
+            <p>不追求一局定输赢，更享受一点点积累变强的过程。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="hazard thin"></div>
+
+<!-- ==================== 开发信息 ==================== -->
+<section id="studio">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">STUDIO</span>
+      <h2 class="sec-title">开发与发行</h2>
+    </div>
+
+    <div class="studio-grid">
+      <div class="studio-card reveal">
+        <div class="label">DEVELOPER</div>
+        <h4>Yumou-Studio</h4>
+        <p>负责《管控区》的整体开发，使用 Godot 4 引擎构建 2D 末世开放世界。</p>
+        <div class="tags">
+          <span>开发</span>
+          <span>Godot 4</span>
+          <span>独立团队</span>
+        </div>
+      </div>
+
+      <div class="studio-card reveal">
+        <div class="label">PUBLISHER</div>
+        <h4>Light-source-Studio</h4>
+        <p>负责《管控区》的发行与运营支持，协调各平台发布事宜。</p>
+        <div class="tags">
+          <span>发行</span>
+          <span>运营</span>
+        </div>
+      </div>
+
+      <div class="studio-card reveal">
+        <div class="label">STATUS</div>
+        <h4>开发中</h4>
+        <p>项目于 2026-09-01 立项，目前仍在开发阶段，尚未公测。当前仅提供 Android 版本下载。</p>
+        <div class="tags">
+          <span>开发中</span>
+          <span>未公测</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 下载区 ==================== -->
+<section id="download" class="download-section">
+  <div class="wrap">
+    <div class="dl-box reveal">
+      <h2>下载 <em>Control Area 管控区</em></h2>
+      <p>目前仅提供 Android 版本，Windows 与 Linux 版本正在开发中</p>
+
+      <div class="download-area">
+        <a href="javascript:void(0)" class="dl-main" id="mainDlBtn" data-download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12M7 10l5 5 5-5M4 19h16"/>
+          </svg>
+          <span id="mainDlText">立即下载</span>
+        </a>
+        <a href="https://codeberg.org/yumou/control-area-offical/releases"
+           class="dl-alt" id="altDlLink" target="_blank" rel="noopener">
+          备用下载（Codeberg）
+        </a>
+      </div>
+
+      <div class="dl-notice" id="dlNotice">
+        开发中 · 欢迎通过下方 <b>反馈渠道</b> 提交 Bug 与建议
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 反馈区 ==================== -->
+<section id="feedback">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">FEEDBACK</span>
+      <h2 class="sec-title">反馈与 Bug 提交</h2>
+      <p class="sec-desc">
+        开发阶段非常需要你的反馈。遇到问题或有建议，请通过以下渠道告诉我们。
+      </p>
+    </div>
+
+    <div class="feedback-grid">
+      <a href="https://github.com/yumou114514/control-area-offical/issues"
+         class="fb-card reveal" target="_blank" rel="noopener">
+        <div class="lbl">PRIMARY · GITHUB</div>
+        <h4>GitHub Issues</h4>
+        <p>主要反馈渠道。适合提交 Bug 报告、功能建议与开发讨论。</p>
+        <span class="fb-link">
+          前往提交
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7M9 7h8v8"/>
+          </svg>
+        </span>
+      </a>
+
+      <a href="https://codeberg.org/yumou/control-area-offical/issues"
+         class="fb-card reveal" target="_blank" rel="noopener">
+        <div class="lbl">MIRROR · CODEBERG</div>
+        <h4>Codeberg Issues</h4>
+        <p>备用反馈渠道。当 GitHub 访问不便时，可以通过 Codeberg 提交反馈。</p>
+        <span class="fb-link">
+          前往提交
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7M9 7h8v8"/>
+          </svg>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
 </main>
 
-<!-- ===================== 页脚 ===================== -->
+<div class="hazard"></div>
+
+<!-- ==================== 页脚 ==================== -->
 <footer>
   <div class="foot-top">
     <div class="foot-brand">
-      <a href="#home" class="logo">
-        <span class="logo-mark"></span>
-        <span class="logo-text">管控区<em>Control-Area</em></span>
+      <a href="#top" class="brand">
+        <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <circle cx="50" cy="50" r="8.5"/>
+            <path d="M50 33 L50 4 A46 46 0 0 1 89.8 27 L64.7 41.5 A17 17 0 0 0 50 33 Z"/>
+            <path d="M50 33 L50 4 A46 46 0 0 1 89.8 27 L64.7 41.5 A17 17 0 0 0 50 33 Z" transform="rotate(120 50 50)"/>
+            <path d="M50 33 L50 4 A46 46 0 0 1 89.8 27 L64.7 41.5 A17 17 0 0 0 50 33 Z" transform="rotate(240 50 50)"/>
+          </g>
+        </svg>
+        <span class="brand-txt">
+          <b>管控区</b>
+          <span>CONTROL AREA</span>
+        </span>
       </a>
-      <p>一款由Yumou工作室研发的开放世界搜打撤，正在积极开发中。</p>
+      <p>
+        一款以末世为背景的 2D 开放世界生存搜打撤游戏，
+        由 Yumou-Studio 开发，Light-source-Studio 发行。
+      </p>
     </div>
 
     <div class="foot-col">
       <h5>游戏</h5>
-      <a href="https://github.com/yumou114514/control-area-offical/releases/latest/download/ControlArea-arm64-v8a.apk" data-download>下载游戏</a>
-      <a href="#features">游戏特色</a>
-      <a href="#news">更新日志</a>
+      <a href="#loop">核心循环</a>
+      <a href="#systems">玩法系统</a>
+      <a href="#players">目标玩家</a>
+      <a href="#studio">开发信息</a>
     </div>
 
     <div class="foot-col">
-      <h5>社区</h5>
-      <a href="https://codeberg.org/yumou/control-area-offical/issues" target="_blank" rel="noopener">官方论坛&bug反馈</a>
+      <h5>下载</h5>
+      <a href="javascript:void(0)" data-download>立即下载</a>
+      <a href="https://codeberg.org/yumou/control-area-offical/releases" target="_blank" rel="noopener">备用下载（Codeberg）</a>
+    </div>
+
+    <div class="foot-col">
+      <h5>反馈</h5>
+      <a href="https://github.com/yumou114514/control-area-offical/issues" target="_blank" rel="noopener">GitHub Issues</a>
+      <a href="https://codeberg.org/yumou/control-area-offical/issues" target="_blank" rel="noopener">Codeberg Issues</a>
     </div>
   </div>
 
   <div class="foot-bottom">
-    <span>© 2026 Yumou工作室 Yumou-STUDIO. 保留所有权利。</span>
+    <span>© 2026 Yumou-Studio · Light-source-Studio · 项目立项于 2026-09-01</span>
     <div class="socials">
-      <a href="#" aria-label="B站">BILIBILI</a>
+      <a href="https://github.com/yumou114514/control-area-offical" target="_blank" rel="noopener" aria-label="GitHub">GH</a>
+      <a href="https://codeberg.org/yumou/control-area-offical" target="_blank" rel="noopener" aria-label="Codeberg">CB</a>
     </div>
   </div>
 </footer>
 
+<!-- ==================== 下载弹窗 ==================== -->
+<div class="modal" id="downloadModal">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-panel">
+    <div class="modal-head">
+      <h3>下载 CONTROL AREA</h3>
+      <button class="close" type="button" data-close-modal aria-label="关闭">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- 当前平台 -->
+      <div class="platform-current" id="platformCurrent">
+        <!-- JS 填充 -->
+      </div>
+
+      <!-- 其他平台切换 -->
+      <div class="platform-switch">
+        <button class="switch-toggle" id="switchToggle" type="button">
+          <span>下载其他平台</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="platform-list" id="platformList">
+          <div class="platform-list-inner" id="platformListInner">
+            <!-- JS 填充 -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-/* ===================== 星空背景 ===================== */
-(function(){
-  const canvas = document.getElementById('stars');
-  const ctx = canvas.getContext('2d');
+/* ============================================================
+   仓库 / 资源命名 / 平台可用性
+============================================================ */
+const REPO = {
+  github:   { owner: "yumou114514", repo: "control-area-offical" },
+  codeberg: { owner: "yumou",       repo: "control-area-offical" }
+};
+
+/* 资源文件名模板：{ver} 会替换为去掉 v 前缀的版本号（v1.4 → 1.4） */
+const ASSETS = {
+  android: "ControlArea-{ver}-android-arm64-release.apk",
+  windows: "ControlArea-{ver}-windows-x64-release-setup.exe",
+  linux:   "ControlArea-{ver}-linux-x64-release.deb"
+};
+
+/* 各平台是否已发布 */
+const AVAILABILITY = {
+  android: true,
+  windows: true,   // 已发布
+  linux:   false,  // 未发布
+  ios:     false,
+  macos:   false,
+  other:   false
+};
+
+/* tag 形如 v1.4 → 1.4 */
+function normalizeVer(tag) {
+  return String(tag || "").replace(/^v/i, "");
+}
+
+/* 最新 release 页面（用于没有对应平台版本时跳转） */
+function releasePageUrl(host) {
+  const r = host === "codeberg" ? REPO.codeberg : REPO.github;
+  const domain = host === "codeberg"
+    ? "https://codeberg.org"
+    : "https://github.com";
+  return `${domain}/${r.owner}/${r.repo}/releases/latest`;
+}
+
+/* 具体资源文件地址 */
+function assetUrl(host, tag, name) {
+  const r = host === "codeberg" ? REPO.codeberg : REPO.github;
+  const domain = host === "codeberg"
+    ? "https://codeberg.org"
+    : "https://github.com";
+  return `${domain}/${r.owner}/${r.repo}/releases/download/${tag}/${name}`;
+}
+
+/* GitHub 主、Codeberg 备用，取 latest release 的 tag */
+async function fetchLatestRelease() {
+  const endpoints = [
+    {
+      source: "github",
+      url: `https://api.github.com/repos/${REPO.github.owner}/${REPO.github.repo}/releases/latest`
+    },
+    {
+      source: "codeberg",
+      url: `https://codeberg.org/api/v1/repos/${REPO.codeberg.owner}/${REPO.codeberg.repo}/releases/latest`
+    }
+  ];
+
+  for (const ep of endpoints) {
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 6000);
+
+      const res = await fetch(ep.url, {
+        headers: { Accept: "application/json" },
+        signal: ctrl.signal,
+        cache: "no-store"
+      });
+      clearTimeout(timer);
+      if (!res.ok) continue;
+
+      const data = await res.json();
+      const tag = data.tag_name || data.tag || "";
+      if (!tag) continue;
+
+      return { tag, source: ep.source };
+    } catch (e) {
+      /* 网络错误 / 超时 / CORS，试下一个 */
+    }
+  }
+  return null;
+}
+
+/* ============================================================
+   平台检测
+============================================================ */
+function detectPlatform() {
+  const ua = (navigator.userAgent || navigator.vendor || window.opera || "").toLowerCase();
+
+  if (/android/i.test(ua)) return "android";
+  if (/windows|win32|win64|wow64/i.test(ua)) return "windows";
+  if (/linux/i.test(ua) && !/android/i.test(ua)) return "linux";
+  if (/iphone|ipad|ipod/i.test(ua)) return "ios";
+  if (/macintosh|mac os x/i.test(ua)) return "macos";
+  return "other";
+}
+
+const PLATFORM = detectPlatform();
+
+const PLATFORM_META = {
+  android: { name: "Android", label: "Android 版（当前平台）" },
+  windows: { name: "Windows", label: "Windows 版（当前平台）" },
+  linux:   { name: "Linux",   label: "Linux 版（当前平台）" },
+  ios:     { name: "iOS",     label: "iOS 版（当前平台）" },
+  macos:   { name: "macOS",   label: "macOS 版（当前平台）" },
+  other:   { name: "当前平台", label: "当前平台" }
+};
+
+/* ============================================================
+   粒子背景
+============================================================ */
+(function () {
+  const canvas = document.getElementById("dust");
+  const ctx = canvas.getContext("2d");
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let W = 0, H = 0, stars = [];
+  let W = 0, H = 0, parts = [];
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function init(){
-    W = canvas.width  = Math.floor(window.innerWidth  * dpr);
+  function build() {
+    W = canvas.width = Math.floor(window.innerWidth * dpr);
     H = canvas.height = Math.floor(window.innerHeight * dpr);
-    canvas.style.width  = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
 
-    const count = Math.min(230, Math.floor(window.innerWidth / 6));
-    const palette = ['180,230,255', '200,190,255', '255,190,225', '220,240,255'];
+    const count = Math.min(150, Math.floor(window.innerWidth / 12));
+    const palette = ["163,224,72", "208,101,44", "160,190,110"];
 
-    stars = Array.from({ length: count }, () => ({
+    parts = Array.from({ length: count }, () => ({
       x: Math.random() * W,
       y: Math.random() * H,
-      r: (Math.random() * 1.3 + 0.35) * dpr,
-      phase: Math.random() * Math.PI * 2,
-      speed: Math.random() * 0.018 + 0.004,
-      vy: (Math.random() * 0.12 + 0.02) * dpr,
+      r: (Math.random() * 1.5 + 0.4) * dpr,
+      vx: (Math.random() - 0.5) * 0.2 * dpr,
+      vy: (Math.random() - 0.5) * 0.2 * dpr,
+      a: Math.random() * 0.4 + 0.1,
       c: palette[(Math.random() * palette.length) | 0]
     }));
   }
 
-  function draw(){
+  function loop() {
     ctx.clearRect(0, 0, W, H);
-    for (let i = 0; i < stars.length; i++){
-      const s = stars[i];
-      s.phase += s.speed;
-      s.y += s.vy;
-      if (s.y > H + 5) { s.y = -5; s.x = Math.random() * W; }
-
-      const alpha = 0.25 + Math.abs(Math.sin(s.phase)) * 0.7;
+    for (let i = 0; i < parts.length; i++) {
+      const p = parts[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < -10) p.x = W + 10;
+      if (p.x > W + 10) p.x = -10;
+      if (p.y < -10) p.y = H + 10;
+      if (p.y > H + 10) p.y = -10;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(' + s.c + ',' + alpha.toFixed(3) + ')';
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(" + p.c + "," + p.a.toFixed(3) + ")";
       ctx.fill();
     }
-    requestAnimationFrame(draw);
+    requestAnimationFrame(loop);
   }
 
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(init, 180);
+  let t;
+  window.addEventListener("resize", () => {
+    clearTimeout(t);
+    t = setTimeout(build, 180);
   });
 
-  init();
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    draw();
-  } else {
-    // 静态绘制一帧
-    ctx.clearRect(0,0,W,H);
-    stars.forEach(s => {
+  build();
+  if (!reduced) loop();
+  else {
+    ctx.clearRect(0, 0, W, H);
+    parts.forEach(p => {
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(' + s.c + ',0.6)';
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(" + p.c + ",0.3)";
       ctx.fill();
     });
   }
 })();
 
-/* ===================== 导航栏 ===================== */
-const nav = document.getElementById('nav');
-const progress = document.getElementById('progress');
-const burger = document.getElementById('burger');
-const navLinks = document.getElementById('navLinks');
-
-window.addEventListener('scroll', () => {
-  const y = window.scrollY;
-  nav.classList.toggle('scrolled', y > 40);
-
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  progress.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
-}, { passive: true });
-
-burger.addEventListener('click', () => {
-  burger.classList.toggle('open');
-  navLinks.classList.toggle('open');
-});
-
-navLinks.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', () => {
-    burger.classList.remove('open');
-    navLinks.classList.remove('open');
-  });
-});
-
-/* ===================== 滚动进场动画 ===================== */
-const io = new IntersectionObserver((entries) => {
-  entries.forEach((entry, i) => {
-    if (entry.isIntersecting) {
-      // 同组元素错开出现
-      const delay = entry.target.dataset.delay || 0;
-      setTimeout(() => entry.target.classList.add('in'), delay);
-      io.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-
-document.querySelectorAll('.reveal').forEach((el, i) => {
-  // 为同一父容器内的兄弟元素设置阶梯延迟
-  const siblings = Array.from(el.parentElement.querySelectorAll(':scope > .reveal'));
-  const idx = siblings.indexOf(el);
-  el.dataset.delay = idx > 0 ? idx * 90 : 0;
-  io.observe(el);
-});
-
-/* ===================== Hero 鼠标视差 ===================== */
-const heroBg = document.getElementById('heroBg');
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
-  let rafId = null;
-  window.addEventListener('mousemove', (e) => {
-    if (rafId) return;
-    rafId = requestAnimationFrame(() => {
-      const x = (e.clientX / window.innerWidth - 0.5);
-      const y = (e.clientY / window.innerHeight - 0.5);
-      heroBg.style.transform = `translate(${x * 26}px, ${y * 26}px) scale(1.06)`;
-      rafId = null;
-    });
-  });
-}
-
-/* ===================== 平滑锚点（兼容旧浏览器） ===================== */
-document.querySelectorAll('a[href^="#"]').forEach(link => {
-  link.addEventListener('click', (e) => {
-    const id = link.getAttribute('href');
-    if (id === '#' || id.length < 2) return;
-    const target = document.querySelector(id);
-    if (!target) return;
-    e.preventDefault();
-    const top = target.getBoundingClientRect().top + window.scrollY - 70;
-    window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
-  });
-});
-
-/* ===================== GitHub Release 直连下载 ===================== */
+/* ============================================================
+   导航 / 进度条
+============================================================ */
 (function () {
-  const REPO       = 'yumou114514/control-area-offical';
-  const ASSET_NAME = 'ControlArea-arm64-v8a.apk';
+  const nav = document.getElementById("nav");
+  const progress = document.getElementById("progress");
+  const burger = document.getElementById("burger");
+  const links = document.getElementById("navLinks");
 
-  // 兜底地址：只要每次 Release 都上传同名 asset，这个链接永远指向最新版
-  const FALLBACK = 'https://github.com/' + REPO + '/releases/latest/download/' + ASSET_NAME;
-  const API      = 'https://api.github.com/repos/' + REPO + '/releases/latest';
+  function onScroll() {
+    const y = window.scrollY;
+    nav.classList.toggle("scrolled", y > 40);
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
+  }
 
-  const links  = document.querySelectorAll('[data-download]');
-  const labels = document.querySelectorAll('[data-dl-label]');
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
 
-  // 1) 先写死兜底链接：即使 JS 被拦、API 限流，点击依然直接下载
-  links.forEach(function (a) {
-    a.href = FALLBACK;
-    a.removeAttribute('target');
-    a.setAttribute('rel', 'noopener');
+  burger.addEventListener("click", () => {
+    burger.classList.toggle("open");
+    links.classList.toggle("open");
   });
 
-  // 2) 再问一次 API，拿到确切 tag 与 asset 地址（顺便显示版本号）
-  if (!window.fetch) return;
-
-  fetch(API, { headers: { Accept: 'application/vnd.github+json' } })
-    .then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
-    })
-    .then(function (data) {
-      const assets = data.assets || [];
-
-      // 优先精确匹配文件名，找不到就退而求其次拿第一个 apk
-      const asset = assets.find(function (a) { return a.name === ASSET_NAME; })
-                 || assets.find(function (a) { return /\.apk$/i.test(a.name); });
-
-      if (asset && asset.browser_download_url) {
-        links.forEach(function (a) { a.href = asset.browser_download_url; });
-      }
-
-      const tag = data.tag_name || '';
-      if (tag) {
-        labels.forEach(function (el) { el.textContent = el.textContent + ' ' + tag; });
-      }
-    })
-    .catch(function () {
-      // 静默失败，保持兜底链接即可
+  links.querySelectorAll("a").forEach(a => {
+    a.addEventListener("click", () => {
+      burger.classList.remove("open");
+      links.classList.remove("open");
     });
+  });
+})();
+
+/* ============================================================
+   滚动进场
+============================================================ */
+(function () {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const siblings = Array.from(el.parentElement.children).filter(c => c.classList.contains("reveal"));
+      const idx = siblings.indexOf(el);
+      const delay = idx > 0 ? Math.min(idx * 80, 400) : 0;
+      setTimeout(() => el.classList.add("in"), delay);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -50px 0px" });
+
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+})();
+
+/* ============================================================
+   下载模块（点击时才检测版本）
+============================================================ */
+(function () {
+  const modal = document.getElementById("downloadModal");
+  const platformCurrent = document.getElementById("platformCurrent");
+  const platformListInner = document.getElementById("platformListInner");
+  const switchToggle = document.getElementById("switchToggle");
+  const platformList = document.getElementById("platformList");
+
+  /* ---------- 打开 / 关闭弹窗 ---------- */
+  function openModal() {
+    modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal() {
+    modal.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  document.querySelectorAll("[data-download]").forEach(el => {
+    el.addEventListener("click", e => {
+      e.preventDefault();
+      openModal();
+    });
+  });
+
+  modal.querySelectorAll("[data-close-modal]").forEach(el => {
+    el.addEventListener("click", closeModal);
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
+  });
+
+  switchToggle.addEventListener("click", () => {
+    switchToggle.classList.toggle("open");
+    platformList.classList.toggle("open");
+  });
+
+  /* ---------- 渲染：弹窗当前平台（不预取版本） ---------- */
+  function renderCurrentPlatform() {
+    const meta = PLATFORM_META[PLATFORM] || PLATFORM_META.other;
+    const avail = !!AVAILABILITY[PLATFORM];
+
+    let desc;
+    if (PLATFORM === "android") {
+      desc = "点击下方按钮下载 Android 版安装包。";
+    } else if (PLATFORM === "windows") {
+      desc = "点击下方按钮下载 Windows 版安装程序。";
+    } else if (PLATFORM === "linux") {
+      desc = "Linux 版正在开发中，点击可前往最新发布页查看。";
+    } else {
+      desc = "当前平台暂无专属版本，点击可前往最新发布页查看。";
+    }
+
+    const hint = avail
+      ? "点击后将自动获取最新版本号，并开始下载对应安装包。"
+      : "点击后将跳转到最新 Release 页面，可在此查看/下载可用平台版本。";
+
+    platformCurrent.innerHTML =
+      '<div class="pc-label">CURRENT PLATFORM</div>' +
+      '<h4>' + meta.label + '</h4>' +
+      '<p class="pc-desc">' + desc + '</p>' +
+      '<div class="pc-hint">' + hint + '</div>' +
+      '<button type="button" class="pc-btn" ' +
+        'data-action="download" data-platform="' + PLATFORM + '">' +
+        (avail ? '开始下载' : '前往发布页') +
+      '</button>';
+  }
+
+  /* ---------- 渲染：弹窗平台列表 ---------- */
+  function renderPlatformList() {
+    const keys = ["android", "windows", "linux"];
+
+    platformListInner.innerHTML = keys.map(key => {
+      const m = PLATFORM_META[key];
+      const avail = !!AVAILABILITY[key];
+      const isCurrent = key === PLATFORM;
+      const btnLabel = avail ? "下载" : "发布页";
+
+      return '' +
+        '<div class="platform-opt">' +
+          '<div class="po-info">' +
+            '<span class="po-name">' + m.name + (isCurrent ? ' · 当前' : '') + '</span>' +
+            '<span class="po-status ' + (avail ? 'avail' : '') + '">' +
+              (avail ? '当前可用' : '开发中') +
+            '</span>' +
+          '</div>' +
+          '<button type="button" class="po-btn" ' +
+            'data-action="download" data-platform="' + key + '">' +
+            btnLabel +
+          '</button>' +
+        '</div>';
+    }).join("");
+  }
+
+  /* ---------- 核心：点击下载时才请求版本 ---------- */
+  async function handleDownload(key, btnEl) {
+    if (btnEl && btnEl.dataset.busy === "1") return;
+
+    const originalText = btnEl ? btnEl.textContent : "";
+    if (btnEl) {
+      btnEl.dataset.busy = "1";
+      btnEl.disabled = true;
+      btnEl.textContent = "检测版本中…";
+    }
+
+    try {
+      const rel = await fetchLatestRelease();
+      const host = rel ? rel.source : "github";
+
+      /* 没有该平台对应版本 / 拿不到 release → 进最新 release 页面 */
+      if (!AVAILABILITY[key] || !rel) {
+        window.location.href = releasePageUrl(host);
+        return;
+      }
+
+      const ver = normalizeVer(rel.tag);
+      const tpl = ASSETS[key];
+      if (!tpl || !ver) {
+        window.location.href = releasePageUrl(host);
+        return;
+      }
+
+      const name = tpl.replace("{ver}", ver);
+      const url = assetUrl(host, rel.tag, name);
+
+      /* 触发下载 */
+      window.location.href = url;
+
+      /* 稍后关闭弹窗 */
+      setTimeout(closeModal, 500);
+    } catch (e) {
+      /* 异常兜底：进 GitHub 最新 release 页面 */
+      window.location.href = releasePageUrl("github");
+    } finally {
+      if (btnEl) {
+        btnEl.dataset.busy = "";
+        btnEl.disabled = false;
+        btnEl.textContent = originalText;
+      }
+    }
+  }
+
+  /* ---------- 事件委托 ---------- */
+  modal.addEventListener("click", e => {
+    const btn = e.target.closest('[data-action="download"]');
+    if (!btn) return;
+    e.preventDefault();
+    const key = btn.getAttribute("data-platform") || PLATFORM;
+    handleDownload(key, btn);
+  });
+
+  /* ---------- 初始化：只渲染静态骨架，不请求版本 ---------- */
+  renderCurrentPlatform();
+  renderPlatformList();
+})();
+
+/* ============================================================
+   平滑锚点
+============================================================ */
+(function () {
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener("click", e => {
+      const id = link.getAttribute("href");
+      if (!id || id === "#") return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      const top = target.getBoundingClientRect().top + window.scrollY - 66;
+      window.scrollTo({ top, behavior: reduced ? "auto" : "smooth" });
+    });
+  });
 })();
 </script>
 </body>
